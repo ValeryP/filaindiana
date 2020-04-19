@@ -1,6 +1,7 @@
 package com.filaindiana.network
 
 
+import com.filaindiana.R
 import com.google.android.gms.maps.model.LatLng
 import com.google.gson.annotations.SerializedName
 import org.joda.time.DateTime
@@ -8,7 +9,7 @@ import org.joda.time.DateTime
 class ShopsResponse : ArrayList<ShopsResponse.ShopsResponseItem>() {
     data class ShopsResponseItem(
         @SerializedName("state")
-        val state: State,
+        val state: State?,
         @SerializedName("supermarket")
         val supermarket: Supermarket
     ) {
@@ -32,6 +33,15 @@ class ShopsResponse : ArrayList<ShopsResponse.ShopsResponseItem>() {
         ) {
             fun getLastUpdate(): DateTime {
                 return DateTime(timestamp)
+            }
+
+            fun getStatusColor(): Int {
+                return when (queueSizePeople) {
+                    in 0..15 -> R.color.colorMarkerGreen
+                    in 15..30 -> R.color.colorMarkerOrange
+                    in 30..Int.MAX_VALUE -> R.color.colorMarkerRed
+                    else -> R.color.colorMarkerGrey
+                }
             }
         }
 
@@ -71,8 +81,34 @@ class ShopsResponse : ArrayList<ShopsResponse.ShopsResponseItem>() {
                 return LatLng(lat.toDouble(), long.toDouble())
             }
 
-            fun getImg(): String {
-                return "https://www.filaindiana.it/brands/$brand.png"
+            fun getImgResId(): Int {
+                return when (brand) {
+                    "auchan" -> R.drawable.auchan
+                    "bennet" -> R.drawable.bennet
+                    "carrefour" -> R.drawable.carrefour
+                    "coop" -> R.drawable.coop
+                    "crai" -> R.drawable.crai
+                    "despar" -> R.drawable.despar
+                    "eataly" -> R.drawable.eataly
+                    "ekom" -> R.drawable.ekom
+                    "esselunga" -> R.drawable.esselunga
+                    "eurospin" -> R.drawable.eurospin
+                    "famila" -> R.drawable.famila
+                    "galassia" -> R.drawable.galassia
+                    "gigante" -> R.drawable.gigante
+                    "iper" -> R.drawable.iper
+                    "iperal" -> R.drawable.iperal
+                    "lidl" -> R.drawable.lidl
+                    "md" -> R.drawable.md
+                    "naturasì" -> R.drawable.naturasi
+                    "pam" -> R.drawable.pam
+                    "penny" -> R.drawable.penny
+                    "simply" -> R.drawable.simply
+                    "superc" -> R.drawable.superc
+                    "tigros" -> R.drawable.tigros
+                    "unes" -> R.drawable.unes
+                    else -> R.drawable.generic
+                }
             }
         }
     }

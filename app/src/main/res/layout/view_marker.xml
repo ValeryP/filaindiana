@@ -4,35 +4,46 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:background="@drawable/bg_rounded_white"
+    android:orientation="horizontal">
 
-    <LinearLayout
+    <ImageView
+        android:id="@+id/view_img"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        app:srcCompat="@android:drawable/btn_star_big_on"
+        tools:ignore="ContentDescription" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/view_text_bg"
-        android:layout_width="52dp"
-        android:layout_height="30dp"
-        android:background="@drawable/ic_launcher_background"
-        android:gravity="center_horizontal"
-        android:orientation="horizontal">
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:background="@drawable/bg_rounded_green"
+        android:gravity="center_horizontal">
 
         <TextView
             android:id="@+id/view_text_number"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="10"
-            android:textSize="18sp" />
+            android:layout_marginStart="16dp"
+            android:text="100"
+            android:textSize="18sp"
+            app:layout_constraintBaseline_toBaselineOf="@+id/view_text_min"
+            app:layout_constraintEnd_toStartOf="@+id/view_text_min"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent" />
 
         <TextView
             android:id="@+id/view_text_min"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="min" />
-    </LinearLayout>
-
-    <ImageView
-        android:id="@+id/view_img"
-        android:layout_width="52dp"
-        android:layout_height="20dp"
-        app:srcCompat="@android:drawable/btn_star_big_on"
-        tools:ignore="ContentDescription" />
+            android:layout_marginEnd="16dp"
+            android:text="min"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/view_text_number"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </LinearLayout>

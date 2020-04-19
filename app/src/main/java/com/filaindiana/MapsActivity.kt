@@ -14,9 +14,9 @@ import android.util.DisplayMetrics
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
-import android.widget.LinearLayout
 import android.widget.Toast.LENGTH_LONG
 import androidx.appcompat.app.AppCompatActivity
+import coil.api.load
 import com.afollestad.materialdialogs.MaterialDialog
 import com.filaindiana.network.RestClient
 import com.filaindiana.network.ShopsResponse
@@ -32,6 +32,7 @@ import com.google.maps.android.SphericalUtil
 import es.dmoral.toasty.Toasty
 import io.nlopez.smartlocation.SmartLocation
 import io.nlopez.smartlocation.location.config.LocationParams.NAVIGATION
+import kotlinx.android.synthetic.main.view_marker.view.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -134,7 +135,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, EasyPermissions.Pe
                 for (shop in shops) {
                     mMap.addMarker(
                         MarkerOptions().position(shop.supermarket.getLocation())
-                            .title(shop.supermarket.name)
                             .icon(BitmapDescriptorFactory.fromBitmap(buildMarkerView(shop)))
                     )
                 }
@@ -145,16 +145,26 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, EasyPermissions.Pe
     @SuppressLint("InflateParams")
     private fun buildMarkerView(shop: ShopsResponse.ShopsResponseItem): Bitmap? {
         val layoutInflater = getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-        val marker: View = layoutInflater.inflate(R.layout.view_marker, null)
+        val marker: View = layoutInflater.inflate(R.layout.view_marker, null).apply {
+            this.view_img.load(shop.supermarket.getImgResId())
+            if (shop.state == null) {
+                this.view_text_bg.setBackgroundResource(R.color.colorMarkerGrey)
+                this.view_text_min.text = ""
+                this.view_text_number.text = "Closed"
+            } else{
+                this.view_text_bg.setBackgroundResource(shop.state.getStatusColor())
+                this.view_text_min.text = if (shop.state.queueWaitMinutes > 0) "min" else ""
+                this.view_text_number.text = shop.state.queueWaitMinutes.toString()
+            }
+        }
         return getBitmapFromView(marker)
     }
 
     private fun getBitmapFromView(view: View): Bitmap? {
         val displayMetrics = DisplayMetrics()
         windowManager.defaultDisplay.getMetrics(displayMetrics)
-        view.layoutParams = LinearLayout.LayoutParams(52.px, 52.px)
         view.measure(displayMetrics.widthPixels, displayMetrics.heightPixels)
-        view.layout(0, 0, 52.px, 52.px)
+        view.layout(0, 0, view.measuredWidth, view.measuredHeight)
         @Suppress("DEPRECATION")
         view.buildDrawingCache()
         val bitmap = Bitmap.createBitmap(
