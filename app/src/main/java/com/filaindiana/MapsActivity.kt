@@ -1,25 +1,40 @@
 package com.filaindiana
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
+import android.util.DisplayMetrics
 import android.util.Log
+import android.view.LayoutInflater
+import android.view.View
+import android.widget.LinearLayout
 import android.widget.Toast.LENGTH_LONG
 import androidx.appcompat.app.AppCompatActivity
 import com.afollestad.materialdialogs.MaterialDialog
+import com.filaindiana.network.RestClient
+import com.filaindiana.network.ShopsResponse
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.GoogleMap.CancelableCallback
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MarkerOptions
+import com.google.maps.android.SphericalUtil
 import es.dmoral.toasty.Toasty
 import io.nlopez.smartlocation.SmartLocation
 import io.nlopez.smartlocation.location.config.LocationParams.NAVIGATION
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import pub.devrel.easypermissions.AfterPermissionGranted
 import pub.devrel.easypermissions.AppSettingsDialog
 import pub.devrel.easypermissions.EasyPermissions
@@ -28,9 +43,10 @@ import pub.devrel.easypermissions.EasyPermissions
 const val RC_PERMISSIONS_LOCATION = 1
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback, EasyPermissions.PermissionCallbacks,
-    EasyPermissions.RationaleCallbacks {
+    EasyPermissions.RationaleCallbacks, GoogleMap.OnCameraIdleListener {
 
     private lateinit var mMap: GoogleMap
+    private lateinit var userLocation: LatLng
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -72,31 +88,83 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, EasyPermissions.Pe
     private fun launchSmartLocator() {
         Toasty.info(this, "Looking for your location...", LENGTH_LONG, true).show()
         SmartLocation.with(this).location().apply { config(NAVIGATION) }.oneFix().start {
-            val location = LatLng(it.latitude, it.longitude)
-            Log.e("xxx", "Location: $location")
-            mMap.animateCamera(
-                CameraUpdateFactory.newLatLngZoom(location, 16f),
-                object : CancelableCallback {
-                    override fun onFinish() {
-                        mMap.apply {
-                            isMyLocationEnabled = true
-                            uiSettings.apply {
-                                isMyLocationButtonEnabled = true
-                                isScrollGesturesEnabled = true
-                                isZoomGesturesEnabled = true
-                            }
-                        }
-                        Toasty.success(
-                            this@MapsActivity,
-                            "Location successfully found!",
-                            LENGTH_LONG,
-                            true
-                        ).show()
-                    }
-
-                    override fun onCancel() {}
-                })
+            userLocation = LatLng(it.latitude, it.longitude)
+            Log.e("xxx", "Location: $userLocation")
+            focusMapUserLocation(userLocation)
         }
+    }
+
+    private fun focusMapUserLocation(location: LatLng) {
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(location, 15f),
+            object : CancelableCallback {
+                override fun onFinish() {
+                    mMap.setOnCameraIdleListener(this@MapsActivity)
+                    mMap.apply {
+                        isMyLocationEnabled = true
+                        uiSettings.apply {
+                            isMyLocationButtonEnabled = true
+                            isScrollGesturesEnabled = true
+                            isZoomGesturesEnabled = true
+                        }
+                    }
+                    Toasty.success(
+                        this@MapsActivity,
+                        "Location successfully found!",
+                        LENGTH_LONG,
+                        true
+                    ).show()
+                }
+
+                override fun onCancel() {}
+            })
+    }
+
+    override fun onCameraIdle() {
+        val mapLocation = mMap.cameraPosition.target
+        val distanceDiff = SphericalUtil.computeDistanceBetween(mapLocation, userLocation)
+        Log.e("xxx", "distanceDiff: $distanceDiff")
+        if (distanceDiff < 1 || distanceDiff > 1000) showShopsMarkers(mapLocation)
+    }
+
+    private fun showShopsMarkers(location: LatLng) {
+        CoroutineScope(Dispatchers.IO).launch {
+            val shops = RestClient.build().getShopsLocations(location.latitude, location.longitude)
+            Log.e("xxx", "showShopsMarkers: $location - ${shops.count()}")
+            CoroutineScope(Dispatchers.Main).launch {
+                for (shop in shops) {
+                    mMap.addMarker(
+                        MarkerOptions().position(shop.supermarket.getLocation())
+                            .title(shop.supermarket.name)
+                            .icon(BitmapDescriptorFactory.fromBitmap(buildMarkerView(shop)))
+                    )
+                }
+            }
+        }
+    }
+
+    @SuppressLint("InflateParams")
+    private fun buildMarkerView(shop: ShopsResponse.ShopsResponseItem): Bitmap? {
+        val layoutInflater = getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+        val marker: View = layoutInflater.inflate(R.layout.view_marker, null)
+        return getBitmapFromView(marker)
+    }
+
+    private fun getBitmapFromView(view: View): Bitmap? {
+        val displayMetrics = DisplayMetrics()
+        windowManager.defaultDisplay.getMetrics(displayMetrics)
+        view.layoutParams = LinearLayout.LayoutParams(52.px, 52.px)
+        view.measure(displayMetrics.widthPixels, displayMetrics.heightPixels)
+        view.layout(0, 0, 52.px, 52.px)
+        @Suppress("DEPRECATION")
+        view.buildDrawingCache()
+        val bitmap = Bitmap.createBitmap(
+            view.measuredWidth,
+            view.measuredHeight,
+            Bitmap.Config.ARGB_8888
+        )
+        val canvas = Canvas(bitmap)
+        view.draw(canvas)
+        return bitmap
     }
 
     override fun onDestroy() {
@@ -122,16 +190,12 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, EasyPermissions.Pe
         }
     }
 
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+    override fun onRequestPermissionsResult(rc: Int, perms: Array<out String>, results: IntArray) {
+        super.onRequestPermissionsResult(rc, perms, results)
         EasyPermissions.onRequestPermissionsResult(
-            requestCode,
-            permissions,
-            grantResults, this
+            rc,
+            perms,
+            results, this
         )
     }
 
@@ -196,4 +260,5 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, EasyPermissions.Pe
             }
         }
     }
+
 }
