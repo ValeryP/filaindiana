@@ -6,20 +6,28 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
+import android.graphics.Bitmap.Config.ARGB_8888
 import android.graphics.Canvas
+import android.graphics.Rect
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.provider.Settings
 import android.util.DisplayMetrics
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.PixelCopy.SUCCESS
+import android.view.PixelCopy.request
 import android.view.View
 import android.widget.Toast.LENGTH_LONG
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import coil.api.load
 import com.afollestad.materialdialogs.MaterialDialog
 import com.filaindiana.network.RestClient
-import com.filaindiana.network.ShopsResponse
+import com.filaindiana.network.ShopsResponse.ShopsResponseItem
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.GoogleMap.CancelableCallback
@@ -32,13 +40,14 @@ import com.google.maps.android.SphericalUtil
 import es.dmoral.toasty.Toasty
 import io.nlopez.smartlocation.SmartLocation
 import io.nlopez.smartlocation.location.config.LocationParams.NAVIGATION
+import kotlinx.android.synthetic.main.activity_maps.*
 import kotlinx.android.synthetic.main.view_marker.view.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import pub.devrel.easypermissions.AfterPermissionGranted
 import pub.devrel.easypermissions.AppSettingsDialog
 import pub.devrel.easypermissions.EasyPermissions
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 
 const val RC_PERMISSIONS_LOCATION = 1
@@ -48,12 +57,14 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, EasyPermissions.Pe
 
     private lateinit var mMap: GoogleMap
     private lateinit var userLocation: LatLng
+    private val mapJobs = mutableListOf<Job>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_maps)
 
-        val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
+        val mapFragment =
+            supportFragmentManager.findFragmentById(R.id.layout_map) as SupportMapFragment
         mapFragment.getMapAsync(this)
     }
 
@@ -77,7 +88,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, EasyPermissions.Pe
     }
 
     private fun startLocationSearch() {
-        Log.e("xxx", "SmartLocation.with()")
+        Log.v("xxx", "SmartLocation.with()")
         val isGpsEnabled = SmartLocation.with(this).location().state().isGpsAvailable
         if (isGpsEnabled) {
             launchSmartLocator()
@@ -90,7 +101,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, EasyPermissions.Pe
         Toasty.info(this, "Looking for your location...", LENGTH_LONG, true).show()
         SmartLocation.with(this).location().apply { config(NAVIGATION) }.oneFix().start {
             userLocation = LatLng(it.latitude, it.longitude)
-            Log.e("xxx", "Location: $userLocation")
+            Log.v("xxx", "Location: $userLocation")
             focusMapUserLocation(userLocation)
         }
     }
@@ -123,42 +134,104 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, EasyPermissions.Pe
     override fun onCameraIdle() {
         val mapLocation = mMap.cameraPosition.target
         val distanceDiff = SphericalUtil.computeDistanceBetween(mapLocation, userLocation)
-        Log.e("xxx", "distanceDiff: $distanceDiff")
+        Log.v("xxx", "distanceDiff: $distanceDiff")
         if (distanceDiff < 1 || distanceDiff > 1000) showShopsMarkers(mapLocation)
     }
 
     private fun showShopsMarkers(location: LatLng) {
-        CoroutineScope(Dispatchers.IO).launch {
+        mapJobs.forEach { it.cancel() }
+        mapJobs.add(CoroutineScope(Dispatchers.Main).launch {
             val shops = RestClient.build().getShopsLocations(location.latitude, location.longitude)
-            Log.e("xxx", "showShopsMarkers: $location - ${shops.count()}")
-            CoroutineScope(Dispatchers.Main).launch {
-                for (shop in shops) {
-                    mMap.addMarker(
-                        MarkerOptions().position(shop.supermarket.getLocation())
-                            .icon(BitmapDescriptorFactory.fromBitmap(buildMarkerView(shop)))
-                    )
-                }
+            Log.v("xxx", "showShopsMarkers: $location - ${shops.count()}")
+            for (shop in shops) {
+                layout_footer_text.text = shop.supermarket.name
+
+                val position = shop.supermarket.getLocation()
+                val iconBitmap = buildMarkerViewAsync(shop).await()
+                val icon = BitmapDescriptorFactory.fromBitmap(iconBitmap)
+                mMap.addMarker(MarkerOptions().position(position).icon(icon))
+
+                delay(1000)
+                layout_footer_view.removeAllViews()
             }
-        }
+        })
     }
 
     @SuppressLint("InflateParams")
-    private fun buildMarkerView(shop: ShopsResponse.ShopsResponseItem): Bitmap? {
-        val layoutInflater = getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-        val marker: View = layoutInflater.inflate(R.layout.view_marker, null).apply {
-            this.view_img.load(shop.supermarket.getImgResId())
-            if (shop.state == null) {
-                this.view_text_bg.setBackgroundResource(R.color.colorMarkerGrey)
-                this.view_text_min.text = ""
-                this.view_text_number.text = "Closed"
-            } else{
-                this.view_text_bg.setBackgroundResource(shop.state.getStatusColor())
-                this.view_text_min.text = if (shop.state.queueWaitMinutes > 0) "min" else ""
-                this.view_text_number.text = shop.state.queueWaitMinutes.toString()
+    private suspend fun buildMarkerViewAsync(shop: ShopsResponseItem): Deferred<Bitmap?> =
+        CoroutineScope(Dispatchers.Main).async {
+            val layoutInflater = getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+            val marker: View = layoutInflater.inflate(R.layout.view_marker, null).apply {
+                this.view_img.load(shop.supermarket.getImgResId())
+                if (shop.state == null) {
+                    this.view_text_bg.setBackgroundResource(R.color.colorMarkerGrey)
+                    this.view_text_min.text = ""
+                    this.view_text_number.text = "Closed"
+                } else {
+                    this.view_text_bg.setBackgroundResource(shop.state.getStatusColor())
+                    this.view_text_min.text = if (shop.state.queueWaitMinutes > 0) "min" else ""
+                    this.view_text_number.text = shop.state.queueWaitMinutes.toString()
+                }
+            }
+            layout_footer_view.addView(marker)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                getBitmapFromViewO(marker)
+            } else {
+                getBitmapFromView(marker)
             }
         }
-        return getBitmapFromView(marker)
-    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private suspend fun getBitmapFromViewO(view: View): Bitmap? =
+        suspendCoroutine { cont ->
+            val displayMetrics = DisplayMetrics()
+            windowManager.defaultDisplay.getMetrics(displayMetrics)
+            view.measure(displayMetrics.widthPixels, displayMetrics.heightPixels)
+            val bitmap = Bitmap.createBitmap(view.measuredWidth, view.measuredHeight, ARGB_8888)
+            val location = IntArray(2)
+            view.getLocationInWindow(location)
+            request(
+                window,
+                Rect(
+                    location[0],
+                    location[1],
+                    location[0] + view.measuredWidth,
+                    location[1] + view.measuredHeight
+                ),
+                bitmap, {
+                    if (it == SUCCESS) {
+                        cont.resume(bitmap)
+                    }
+                },
+                Handler(Looper.getMainLooper())
+            )
+        }
+
+//    @RequiresApi(Build.VERSION_CODES.O)
+//    private fun getBitmapFromViewO(view: View, bitmapCallback: (Bitmap) -> Unit) {
+//        val displayMetrics = DisplayMetrics()
+//        windowManager.defaultDisplay.getMetrics(displayMetrics)
+//        view.measure(displayMetrics.widthPixels, displayMetrics.heightPixels)
+//        val bitmap = Bitmap.createBitmap(view.measuredWidth, view.measuredHeight, ARGB_8888)
+//        val location = IntArray(2)
+//        view.getLocationInWindow(location)
+//        request(
+//            window,
+//            Rect(
+//                location[0],
+//                location[1],
+//                location[0] + view.measuredWidth,
+//                location[1] + view.measuredHeight
+//            ),
+//            bitmap, {
+//                if (it == SUCCESS) {
+//                    bitmapCallback.invoke(bitmap)
+//                }
+//            },
+//            Handler(Looper.getMainLooper())
+//        )
+////        bitmapCallback.invoke(view.drawToBitmap(ARGB_8888))
+//    }
 
     private fun getBitmapFromView(view: View): Bitmap? {
         val displayMetrics = DisplayMetrics()
@@ -170,7 +243,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, EasyPermissions.Pe
         val bitmap = Bitmap.createBitmap(
             view.measuredWidth,
             view.measuredHeight,
-            Bitmap.Config.ARGB_8888
+            ARGB_8888
         )
         val canvas = Canvas(bitmap)
         view.draw(canvas)
