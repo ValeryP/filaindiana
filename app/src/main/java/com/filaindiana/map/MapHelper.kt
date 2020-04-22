@@ -1,13 +1,17 @@
 package com.filaindiana.map
 
 import android.util.Log
-import android.widget.Toast
+import android.view.View.GONE
+import android.view.View.VISIBLE
+import android.widget.Toast.LENGTH_LONG
 import com.filaindiana.DialogProvider
 import com.filaindiana.network.RestClient
+import com.filaindiana.network.ShopsResponse
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.maps.android.SphericalUtil
 import es.dmoral.toasty.Toasty
@@ -24,9 +28,10 @@ import kotlinx.coroutines.launch
  * @email valeriij.palamarchuk@gmail.com
  * Created on 22.04.2020
  */
-class MapHelper(private val activity: MapsActivity, val mMap: GoogleMap) {
+class MapHelper(private val activity: MapsActivity, val mMap: GoogleMap) :
+    GoogleMap.OnCameraIdleListener, GoogleMap.OnMarkerClickListener {
     private val mapJobs = mutableListOf<Job>()
-    private val fetchedLocations = mutableListOf<LatLng>()
+    private val fetchedShops = mutableMapOf<LatLng, ShopsResponse>()
 
     init {
         mMap.apply {
@@ -36,6 +41,7 @@ class MapHelper(private val activity: MapsActivity, val mMap: GoogleMap) {
                 isTiltGesturesEnabled = false
                 isZoomGesturesEnabled = false
             }
+            setOnMarkerClickListener(this@MapHelper)
         }
     }
 
@@ -49,9 +55,9 @@ class MapHelper(private val activity: MapsActivity, val mMap: GoogleMap) {
         }
     }
 
-    fun fetchNewShops() {
+    private fun fetchNewShops() {
         val mapLocation = mMap.cameraPosition.target
-        val shouldFetchLocation = fetchedLocations.isEmpty() || !fetchedLocations.any {
+        val shouldFetchLocation = fetchedShops.isEmpty() || !fetchedShops.keys.any {
             SphericalUtil.computeDistanceBetween(mapLocation, it) < 1000
         }
         if (shouldFetchLocation) {
@@ -65,24 +71,25 @@ class MapHelper(private val activity: MapsActivity, val mMap: GoogleMap) {
         mapJobs.add(CoroutineScope(Dispatchers.Main).launch {
             val shops = RestClient.build().getShopsLocations(location.latitude, location.longitude)
             Log.v("xxx", "showShopsMarkers: $location - ${shops.count()}")
+            activity.layout_footer_root.visibility = VISIBLE
             for (shop in shops) {
                 activity.layout_footer_text.text = shop.supermarket.name
 
                 val position = shop.supermarket.getLocation()
-                val iconBitmap = MapMarkerProvider(activity)
-                    .buildMarkerViewAsync(shop)
+                val iconBitmap = MapMarkerProvider(activity).buildMarkerViewAsync(shop)
                 val icon = BitmapDescriptorFactory.fromBitmap(iconBitmap)
-                val marker = MarkerOptions().position(position).icon(icon)
-                mMap.addMarker(marker)
+                val markerOptions = MarkerOptions().position(position).icon(icon)
+                mMap.addMarker(markerOptions).apply { tag = shop.supermarket.marketId }
 
                 activity.layout_footer_view.removeAllViews()
             }
-            fetchedLocations.add(location)
+            activity.layout_footer_root.visibility = GONE
+            fetchedShops[location] = shops
         })
     }
 
     private fun launchSmartLocator() {
-        Toasty.info(activity, "Looking for your location...", Toast.LENGTH_LONG, true).show()
+        Toasty.info(activity, "Looking for your location...", LENGTH_LONG, true).show()
         SmartLocation.with(activity).location().apply { config(LocationParams.NAVIGATION) }.oneFix()
             .start {
                 val userLocation = LatLng(it.latitude, it.longitude)
@@ -96,7 +103,7 @@ class MapHelper(private val activity: MapsActivity, val mMap: GoogleMap) {
             CameraUpdateFactory.newLatLngZoom(location, 15f),
             object : GoogleMap.CancelableCallback {
                 override fun onFinish() {
-                    mMap.setOnCameraIdleListener(activity)
+                    mMap.setOnCameraIdleListener(this@MapHelper)
                     mMap.apply {
                         isMyLocationEnabled = true
                         uiSettings.apply {
@@ -108,12 +115,44 @@ class MapHelper(private val activity: MapsActivity, val mMap: GoogleMap) {
                     Toasty.success(
                         activity,
                         "Location successfully found!",
-                        Toast.LENGTH_LONG,
+                        LENGTH_LONG,
                         true
                     ).show()
                 }
 
                 override fun onCancel() {}
             })
+    }
+
+    override fun onCameraIdle() = fetchNewShops()
+    override fun onMarkerClick(marker: Marker?): Boolean {
+        marker?.let { it ->
+            val shopId = it.tag
+            val shop = fetchedShops.values.flatten()
+                .firstOrNull { item -> item.supermarket.marketId == shopId }
+            shop?.let {
+                val iconRes = shop.supermarket.getImgResId()
+                val name = shop.supermarket.name
+                val address = "${shop.supermarket.address}, ${shop.supermarket.city}"
+                val openHours =
+                    shop.supermarket.getOpeningHours().let { "${it.first} - ${it.second}" }
+                val queueSizePeople = shop.state?.queueSizePeople ?: 0
+                val queueWaitMinutes = shop.state?.queueWaitMinutes ?: 0
+                val lastUpdateTime = shop.state?.getLastUpdate()
+                DialogProvider.showMarkerDetails(
+                    activity,
+                    iconRes,
+                    name,
+                    address,
+                    openHours,
+                    queueSizePeople,
+                    queueWaitMinutes,
+                    lastUpdateTime
+                ) {
+                    Log.v("xxx", "Click: $shopId")
+                }
+            }
+        }
+        return false
     }
 }

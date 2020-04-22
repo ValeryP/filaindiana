@@ -6,6 +6,9 @@ import android.content.Intent
 import android.net.Uri
 import android.provider.Settings
 import com.afollestad.materialdialogs.MaterialDialog
+import com.afollestad.materialdialogs.customview.customView
+import com.afollestad.materialdialogs.customview.getCustomView
+import kotlinx.android.synthetic.main.dialog_marker_details.view.*
 
 /*
  * @author Valeriy Palamarchuk
@@ -26,6 +29,32 @@ object DialogProvider {
             }
             negativeButton(text = "Exit") {
                 (ctx as Activity).finishAndRemoveTask()
+            }
+        }
+    }
+
+    fun showMarkerDetails(
+        ctx: Context,
+        iconRes: Int,
+        name: String,
+        address: String,
+        openHours: String,
+        queueSizePeople: Int,
+        queueWaitMinutes: Int,
+        lastUpdateTime: String?,
+        onSubscribeClicked: () -> Unit
+    ) {
+        MaterialDialog(ctx).show { customView(R.layout.dialog_marker_details) }.let {
+            it.getCustomView().apply {
+                layout_dialogMarkerDetails_img.setImageResource(iconRes)
+                layout_dialogMarkerDetails_name.text = name
+                layout_dialogMarkerDetails_address.text = address
+                layout_dialogMarkerDetails_openHours.text = "Open: $openHours"
+                layout_dialogMarkerDetails_queue.text =
+                    "$queueSizePeople pers / $queueWaitMinutes min"
+                layout_dialogMarkerDetails_update.text =
+                    if (lastUpdateTime != null) "Last reported: $lastUpdateTime" else ""
+                layout_dialogMarkerDetails_button.setOnClickListener { onSubscribeClicked() }
             }
         }
     }

@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/layout_dialogMarkerDetails_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent">
+
+
+    <ImageView
+        android:id="@+id/layout_dialogMarkerDetails_img"
+        android:layout_width="wrap_content"
+        android:layout_height="64dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/carrefour"
+        tools:ignore="ContentDescription" />
+
+    <TextView
+        android:id="@+id/layout_dialogMarkerDetails_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:fontFamily="sans-serif-medium"
+        android:shadowColor="@color/colorTextBlack"
+        android:textSize="24sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/layout_dialogMarkerDetails_img"
+        tools:text="Carrefour Market " />
+
+    <TextView
+        android:id="@+id/layout_dialogMarkerDetails_address"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:shadowColor="@color/colorTextDark"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/layout_dialogMarkerDetails_name"
+        tools:text="Via Bergamo, 10, Milano" />
+
+    <TextView
+        android:id="@+id/layout_dialogMarkerDetails_openHours"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:shadowColor="@color/colorTextDark"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/layout_dialogMarkerDetails_address"
+        tools:text="Open: 07:30 - 20:00" />
+
+    <TextView
+        android:id="@+id/layout_dialogMarkerDetails_queue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:shadowColor="@color/colorTextBlack"
+        android:textColor="@color/colorMarkerGreen"
+        android:textSize="36sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/layout_dialogMarkerDetails_openHours"
+        tools:text="4 pers / 4 min" />
+
+    <TextView
+        android:id="@+id/layout_dialogMarkerDetails_update"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:shadowColor="@color/colorTextDark"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/layout_dialogMarkerDetails_queue"
+        tools:text="Last reported: 22 Apr 06:32" />
+
+    <Button
+        android:id="@+id/layout_dialogMarkerDetails_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:backgroundTint="@color/colorAccent"
+        android:minWidth="150dp"
+        android:paddingStart="32dp"
+        android:paddingEnd="32dp"
+        android:text="Subscribe for updates"
+        android:textColor="@color/colorTextWhite"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/layout_dialogMarkerDetails_update" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

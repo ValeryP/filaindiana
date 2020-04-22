@@ -19,7 +19,7 @@ import pub.devrel.easypermissions.EasyPermissions
 const val RC_PERMISSIONS_LOCATION = 1
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback, EasyPermissions.PermissionCallbacks,
-    EasyPermissions.RationaleCallbacks, GoogleMap.OnCameraIdleListener {
+    EasyPermissions.RationaleCallbacks {
 
     private lateinit var mapHelper: MapHelper
 
@@ -38,10 +38,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, EasyPermissions.Pe
     override fun onResume() {
         super.onResume()
         if (::mapHelper.isInitialized) askLocationPermissions()
-    }
-
-    override fun onCameraIdle() {
-        mapHelper.fetchNewShops()
     }
 
     override fun onDestroy() {

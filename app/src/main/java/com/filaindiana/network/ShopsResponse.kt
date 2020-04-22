@@ -1,11 +1,13 @@
 package com.filaindiana.network
 
 
+import android.util.Log
 import androidx.annotation.DrawableRes
 import com.filaindiana.R
 import com.google.android.gms.maps.model.LatLng
 import com.google.gson.annotations.SerializedName
 import org.joda.time.DateTime
+import org.joda.time.format.DateTimeFormat
 
 class ShopsResponse : ArrayList<ShopsResponse.ShopsResponseItem>() {
     data class ShopsResponseItem(
@@ -32,8 +34,13 @@ class ShopsResponse : ArrayList<ShopsResponse.ShopsResponseItem>() {
             @SerializedName("updated_at")
             val updatedAt: String
         ) {
-            fun getLastUpdate(): DateTime {
-                return DateTime(timestamp)
+            fun getLastUpdate(): String? {
+                return try {
+                    DateTime(timestamp).toString(DateTimeFormat.forPattern("d MMMM, yyyy"))
+                } catch (e: Exception) {
+                    Log.e("xxx", "$timestamp is wrong")
+                    null
+                }
             }
 
             @DrawableRes
