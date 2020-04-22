@@ -1,6 +1,7 @@
 package com.filaindiana.network
 
 
+import androidx.annotation.DrawableRes
 import com.filaindiana.R
 import com.google.android.gms.maps.model.LatLng
 import com.google.gson.annotations.SerializedName
@@ -35,12 +36,13 @@ class ShopsResponse : ArrayList<ShopsResponse.ShopsResponseItem>() {
                 return DateTime(timestamp)
             }
 
+            @DrawableRes
             fun getStatusColor(): Int {
                 return when (queueSizePeople) {
-                    in 0..15 -> R.color.colorMarkerGreen
-                    in 15..30 -> R.color.colorMarkerOrange
-                    in 30..Int.MAX_VALUE -> R.color.colorMarkerRed
-                    else -> R.color.colorMarkerGrey
+                    in 0..15 -> R.drawable.bg_rounded_green
+                    in 15..30 -> R.drawable.bg_rounded_orange
+                    in 30..Int.MAX_VALUE -> R.drawable.bg_rounded_red
+                    else -> R.drawable.bg_rounded_grey
                 }
             }
         }
@@ -72,7 +74,8 @@ class ShopsResponse : ArrayList<ShopsResponse.ShopsResponseItem>() {
             val updatedAt: String
         ) {
             fun getOpeningHours(): Pair<String, String> {
-                val hours = openingHours.split("'").filter { it.contains(":") }.chunked(2)
+                val hours = openingHours.split(Regex("['\"]")).filter { it.contains(Regex("[:.]")) }
+                    .chunked(2)
                 val dayOfWeek = DateTime.now().dayOfWeek
                 return hours[dayOfWeek].zipWithNext().first()
             }

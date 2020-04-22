@@ -4,9 +4,10 @@
     <color name="colorPrimaryDark">#3700B3</color>
     <color name="colorAccent">#03DAC5</color>
 
-    <color name="colorMarkerGreen">#7ED756</color>
-    <color name="colorMarkerOrange">#FDAC32</color>
+    <color name="colorMarkerGreen">#388E3C</color>
+    <color name="colorMarkerOrange">#FF9800</color>
     <color name="colorMarkerRed">#FC0D1B</color>
     <color name="colorMarkerGrey">#393B3A</color>
+    <color name="colorTextWhite">#FFF</color>
 
 </resources>

@@ -19,7 +19,6 @@ class App : Application() {
         super.onCreate()
         JodaTimeAndroid.init(this)
         ImageLoader(this) {
-            crossfade(true)
             allowHardware(false)
             okHttpClient {
                 OkHttpClient.Builder()
