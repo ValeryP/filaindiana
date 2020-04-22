@@ -1,12 +1,14 @@
 package com.filaindiana.network
 
 
-import android.util.Log
+import android.text.format.DateUtils
+import android.text.format.DateUtils.MINUTE_IN_MILLIS
 import androidx.annotation.DrawableRes
 import com.filaindiana.R
 import com.google.android.gms.maps.model.LatLng
 import com.google.gson.annotations.SerializedName
 import org.joda.time.DateTime
+import org.joda.time.LocalDateTime
 import org.joda.time.format.DateTimeFormat
 
 class ShopsResponse : ArrayList<ShopsResponse.ShopsResponseItem>() {
@@ -35,12 +37,20 @@ class ShopsResponse : ArrayList<ShopsResponse.ShopsResponseItem>() {
             val updatedAt: String
         ) {
             fun getLastUpdate(): String? {
-                return try {
-                    DateTime(timestamp).toString(DateTimeFormat.forPattern("d MMMM, yyyy"))
+                val pattern = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss")
+                val timestampTime = try {
+                    LocalDateTime.parse(timestamp.split(".").first(), pattern).toDateTime()
                 } catch (e: Exception) {
-                    Log.e("xxx", "$timestamp is wrong")
                     null
                 }
+                val updateTime =
+                    timestampTime ?: LocalDateTime.parse(updatedAt, pattern).toDateTime()
+                val nowTime = DateTime.now()
+                return DateUtils.getRelativeTimeSpanString(
+                    updateTime.millis,
+                    nowTime.millis,
+                    MINUTE_IN_MILLIS
+                ).toString()
             }
 
             @DrawableRes

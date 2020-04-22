@@ -58,7 +58,7 @@ class MapHelper(private val activity: MapsActivity, val mMap: GoogleMap) :
     private fun fetchNewShops() {
         val mapLocation = mMap.cameraPosition.target
         val shouldFetchLocation = fetchedShops.isEmpty() || !fetchedShops.keys.any {
-            SphericalUtil.computeDistanceBetween(mapLocation, it) < 1000
+            SphericalUtil.computeDistanceBetween(mapLocation, it) < 500
         }
         if (shouldFetchLocation) {
             Log.v("xxx", "distanceDiff: $shouldFetchLocation")

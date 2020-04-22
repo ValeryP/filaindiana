@@ -43,7 +43,7 @@ class MapMarkerProvider(private val activity: MapsActivity) {
                     this.view_text_min.text = "Closed"
                 } else {
                     this.view_text_bg.setBackgroundResource(shop.state.getStatusColor())
-                    this.view_text_min.text = if (shop.state.queueWaitMinutes > 0) "min" else ""
+                    this.view_text_min.text = if (shop.state.queueWaitMinutes >= 0) "min" else ""
                     this.view_text_number.text = shop.state.queueWaitMinutes.toString()
                 }
             }
