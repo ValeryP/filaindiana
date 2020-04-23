@@ -4,6 +4,8 @@ import android.Manifest.permission.ACCESS_COARSE_LOCATION
 import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
+import android.view.View.VISIBLE
 import androidx.appcompat.app.AppCompatActivity
 import com.filaindiana.DialogProvider
 import com.filaindiana.R
@@ -11,6 +13,7 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import io.nlopez.smartlocation.SmartLocation
+import kotlinx.android.synthetic.main.activity_maps.*
 import pub.devrel.easypermissions.AfterPermissionGranted
 import pub.devrel.easypermissions.AppSettingsDialog.DEFAULT_SETTINGS_REQ_CODE
 import pub.devrel.easypermissions.EasyPermissions
@@ -29,6 +32,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, EasyPermissions.Pe
         (supportFragmentManager.findFragmentById(R.id.layout_map) as SupportMapFragment)
             .getMapAsync(this)
     }
+
 
     override fun onMapReady(googleMap: GoogleMap) {
         mapHelper = MapHelper(this, googleMap)
@@ -49,7 +53,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, EasyPermissions.Pe
     private fun askLocationPermissions() {
         val perms = arrayOf(ACCESS_COARSE_LOCATION, ACCESS_FINE_LOCATION)
         if (EasyPermissions.hasPermissions(this, *perms)) {
-            mapHelper.startLocationSearch()
+            requestLocationSearch()
         } else {
             EasyPermissions.requestPermissions(
                 this,
@@ -74,12 +78,12 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, EasyPermissions.Pe
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == DEFAULT_SETTINGS_REQ_CODE) {
-            mapHelper.startLocationSearch()
+            requestLocationSearch()
         }
     }
 
     override fun onPermissionsGranted(requestCode: Int, perms: MutableList<String>) {
-        mapHelper.startLocationSearch()
+        requestLocationSearch()
     }
 
     override fun onRationaleDenied(requestCode: Int) {
@@ -87,6 +91,26 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, EasyPermissions.Pe
     }
 
     override fun onRationaleAccepted(requestCode: Int) {
-        mapHelper.startLocationSearch()
+        requestLocationSearch()
+    }
+
+    private fun requestLocationSearch() {
+        mapHelper.startLocationSearch {
+            layout_hide_closed.visibility = VISIBLE
+            layout_hide_closed.setOnTouchListener { v, event ->
+                v.onTouchEvent(event)
+                true
+            }
+            layout_hide_closed.setOnCheckedChangeListener { _, isOnlyOpened ->
+                layout_hide_closed.isEnabled = false
+                layout_hide_closed.isClickable = false
+                Log.v("xxx", "1")
+                mapHelper.invalidateMarkers(isOnlyOpened) {
+                    Log.v("xxx", "2")
+                    layout_hide_closed.isEnabled = true
+                    layout_hide_closed.isClickable = true
+                }
+            }
+        }
     }
 }

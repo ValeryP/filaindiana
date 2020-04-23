@@ -22,6 +22,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import java.util.*
+import kotlin.concurrent.schedule
 
 /*
  * @author Valeriy Palamarchuk
@@ -32,6 +34,7 @@ class MapHelper(private val activity: MapsActivity, val mMap: GoogleMap) :
     GoogleMap.OnCameraIdleListener, GoogleMap.OnMarkerClickListener {
     private val mapJobs = mutableListOf<Job>()
     private val fetchedShops = mutableMapOf<LatLng, ShopsResponse>()
+    private var isOnlyOpenShowed = true
 
     init {
         mMap.apply {
@@ -45,11 +48,11 @@ class MapHelper(private val activity: MapsActivity, val mMap: GoogleMap) :
         }
     }
 
-    fun startLocationSearch() {
+    fun startLocationSearch(callback: (() -> Unit)? = null) {
         Log.v("xxx", "SmartLocation.with()")
         val isGpsEnabled = SmartLocation.with(activity).location().state().isGpsAvailable
         if (isGpsEnabled) {
-            launchSmartLocator()
+            launchSmartLocator(callback)
         } else {
             DialogProvider.showGpsRequiredDialog(activity)
         }
@@ -66,39 +69,63 @@ class MapHelper(private val activity: MapsActivity, val mMap: GoogleMap) :
         }
     }
 
+    fun invalidateMarkers(isOnlyOpened: Boolean, callback: (() -> Unit)? = null) {
+        mMap.clear()
+        isOnlyOpenShowed = isOnlyOpened
+        CoroutineScope(Dispatchers.Main).launch {
+            fetchedShops.keys.forEach { latLng ->
+                addShopsOnTheMap(fetchedShops[latLng]?.filter {
+                    filterOpened(it)
+                } ?: emptyList())
+            }
+            if (callback != null) Timer().schedule(1000) {
+                CoroutineScope(Dispatchers.Main).launch {
+                    callback()
+                }
+            }
+        }
+    }
+
+    private fun filterOpened(it: ShopsResponse.ShopsResponseItem) =
+        if (isOnlyOpenShowed) it.state != null && it.supermarket.isOpen else true
+
     private fun showShopsMarkers(location: LatLng) {
         mapJobs.forEach { it.cancel() }
         mapJobs.add(CoroutineScope(Dispatchers.Main).launch {
             val shops = RestClient.build().getShopsLocations(location.latitude, location.longitude)
             Log.v("xxx", "showShopsMarkers: $location - ${shops.count()}")
-            activity.layout_footer_root.visibility = VISIBLE
-            for (shop in shops) {
-                activity.layout_footer_text.text = shop.supermarket.name
-
-                val position = shop.supermarket.getLocation()
-                val iconBitmap = MapMarkerProvider(activity).buildMarkerViewAsync(shop)
-                val icon = BitmapDescriptorFactory.fromBitmap(iconBitmap)
-                val markerOptions = MarkerOptions().position(position).icon(icon)
-                mMap.addMarker(markerOptions).apply { tag = shop.supermarket.marketId }
-
-                activity.layout_footer_view.removeAllViews()
-            }
-            activity.layout_footer_root.visibility = GONE
             fetchedShops[location] = shops
+            addShopsOnTheMap(shops.filter { filterOpened(it) })
         })
     }
 
-    private fun launchSmartLocator() {
+    private suspend fun addShopsOnTheMap(shops: List<ShopsResponse.ShopsResponseItem>) {
+        activity.layout_footer_root.visibility = VISIBLE
+        for (shop in shops) {
+            activity.layout_footer_text.text = shop.supermarket.name
+
+            val position = shop.supermarket.getLocation()
+            val iconBitmap = MapMarkerProvider(activity).buildMarkerViewAsync(shop)
+            val icon = BitmapDescriptorFactory.fromBitmap(iconBitmap)
+            val markerOptions = MarkerOptions().position(position).icon(icon)
+            mMap.addMarker(markerOptions).apply { tag = shop.supermarket.marketId }
+
+            activity.layout_footer_view.removeAllViews()
+        }
+        activity.layout_footer_root.visibility = GONE
+    }
+
+    private fun launchSmartLocator(callback: (() -> Unit)? = null) {
         Toasty.info(activity, "Looking for your location...", LENGTH_LONG, true).show()
         SmartLocation.with(activity).location().apply { config(LocationParams.NAVIGATION) }.oneFix()
             .start {
                 val userLocation = LatLng(it.latitude, it.longitude)
                 Log.v("xxx", "Location: $userLocation")
-                focusMapUserLocation(userLocation)
+                focusMapUserLocation(userLocation, callback)
             }
     }
 
-    private fun focusMapUserLocation(location: LatLng) {
+    private fun focusMapUserLocation(location: LatLng, callback: (() -> Unit)? = null) {
         mMap.animateCamera(
             CameraUpdateFactory.newLatLngZoom(location, 15f),
             object : GoogleMap.CancelableCallback {
@@ -118,6 +145,11 @@ class MapHelper(private val activity: MapsActivity, val mMap: GoogleMap) :
                         LENGTH_LONG,
                         true
                     ).show()
+                    if (callback != null) Timer().schedule(1000) {
+                        CoroutineScope(Dispatchers.Main).launch {
+                            callback()
+                        }
+                    }
                 }
 
                 override fun onCancel() {}

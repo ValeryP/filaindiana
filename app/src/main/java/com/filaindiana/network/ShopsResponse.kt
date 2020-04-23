@@ -8,6 +8,7 @@ import com.filaindiana.R
 import com.google.android.gms.maps.model.LatLng
 import com.google.gson.annotations.SerializedName
 import org.joda.time.DateTime
+import org.joda.time.Interval
 import org.joda.time.LocalDateTime
 import org.joda.time.format.DateTimeFormat
 
@@ -37,20 +38,27 @@ class ShopsResponse : ArrayList<ShopsResponse.ShopsResponseItem>() {
             val updatedAt: String
         ) {
             fun getLastUpdate(): String? {
-                val pattern = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss")
-                val timestampTime = try {
-                    LocalDateTime.parse(timestamp.split(".").first(), pattern).toDateTime()
-                } catch (e: Exception) {
-                    null
-                }
-                val updateTime =
-                    timestampTime ?: LocalDateTime.parse(updatedAt, pattern).toDateTime()
-                val nowTime = DateTime.now()
                 return DateUtils.getRelativeTimeSpanString(
-                    updateTime.millis,
-                    nowTime.millis,
+                    getUpdateTime().millis,
+                    DateTime.now().millis,
                     MINUTE_IN_MILLIS
                 ).toString()
+            }
+
+            private fun getUpdateTime(): DateTime {
+                val pattern = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss")
+                return try {
+                    LocalDateTime.parse(timestamp.split(".").first(), pattern).toDateTime()
+                } catch (e: Exception) {
+                    LocalDateTime.parse(updatedAt, pattern).plusHours(2).toDateTime()
+                }
+            }
+
+            fun getUpdateFreshness(): Float {
+                val lastUpdate = getUpdateTime()
+                val now = DateTime.now()
+                val hours = Interval(lastUpdate, now).toDuration().standardHours
+                return if (hours >= 10) 0.2f else (10 - hours) / 10f + 0.1f
             }
 
             @DrawableRes

@@ -11,6 +11,7 @@ import android.util.DisplayMetrics
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.PixelCopy
+import android.view.PixelCopy.SUCCESS
 import android.view.View
 import android.view.ViewTreeObserver
 import androidx.annotation.RequiresApi
@@ -45,9 +46,9 @@ class MapMarkerProvider(private val activity: MapsActivity) {
                     this.view_text_bg.setBackgroundResource(shop.state.getStatusColor())
                     this.view_text_min.text = if (shop.state.queueWaitMinutes >= 0) "min" else ""
                     this.view_text_number.text = shop.state.queueWaitMinutes.toString()
+                    this.view_text_bg.alpha = shop.state.getUpdateFreshness()
                 }
             }
-            Log.v("xxx", "$shop")
             addMarkerView(marker)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 getBitmapFromViewO(marker)
@@ -88,12 +89,11 @@ class MapMarkerProvider(private val activity: MapsActivity) {
                 location[0] + view.measuredWidth,
                 location[1] + view.measuredHeight
             )
-            Log.v("xxx", "$rect")
             PixelCopy.request(
                 activity.window,
                 rect,
                 bitmap, {
-                    if (it == PixelCopy.SUCCESS) {
+                    if (it == SUCCESS) {
                         cont.resume(bitmap)
                     }
                 },
