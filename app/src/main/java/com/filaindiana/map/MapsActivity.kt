@@ -104,9 +104,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, EasyPermissions.Pe
             layout_hide_closed.setOnCheckedChangeListener { _, isOnlyOpened ->
                 layout_hide_closed.isEnabled = false
                 layout_hide_closed.isClickable = false
-                Log.v("xxx", "1")
                 mapHelper.invalidateMarkers(isOnlyOpened) {
-                    Log.v("xxx", "2")
                     layout_hide_closed.isEnabled = true
                     layout_hide_closed.isClickable = true
                 }

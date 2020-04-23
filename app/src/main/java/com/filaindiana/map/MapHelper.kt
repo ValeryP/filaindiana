@@ -37,14 +37,27 @@ class MapHelper(private val activity: MapsActivity, val mMap: GoogleMap) :
     private var isOnlyOpenShowed = true
 
     init {
+        freezeMap()
+        mMap.setOnMarkerClickListener(this@MapHelper)
+    }
+
+    private fun freezeMap() {
+        mMap.uiSettings.apply {
+            isRotateGesturesEnabled = false
+            isScrollGesturesEnabled = false
+            isTiltGesturesEnabled = false
+            isZoomGesturesEnabled = false
+        }
+    }
+
+    private fun defreezeMap() {
         mMap.apply {
+            isMyLocationEnabled = true
             uiSettings.apply {
-                isRotateGesturesEnabled = false
-                isScrollGesturesEnabled = false
-                isTiltGesturesEnabled = false
-                isZoomGesturesEnabled = false
+                isMyLocationButtonEnabled = true
+                isScrollGesturesEnabled = true
+                isZoomGesturesEnabled = true
             }
-            setOnMarkerClickListener(this@MapHelper)
         }
     }
 
@@ -70,6 +83,7 @@ class MapHelper(private val activity: MapsActivity, val mMap: GoogleMap) :
     }
 
     fun invalidateMarkers(isOnlyOpened: Boolean, callback: (() -> Unit)? = null) {
+        freezeMap()
         mMap.clear()
         isOnlyOpenShowed = isOnlyOpened
         CoroutineScope(Dispatchers.Main).launch {
@@ -78,9 +92,10 @@ class MapHelper(private val activity: MapsActivity, val mMap: GoogleMap) :
                     filterOpened(it)
                 } ?: emptyList())
             }
-            if (callback != null) Timer().schedule(1000) {
+            if (callback != null) Timer().schedule(300) {
                 CoroutineScope(Dispatchers.Main).launch {
                     callback()
+                    defreezeMap()
                 }
             }
         }
@@ -131,14 +146,7 @@ class MapHelper(private val activity: MapsActivity, val mMap: GoogleMap) :
             object : GoogleMap.CancelableCallback {
                 override fun onFinish() {
                     mMap.setOnCameraIdleListener(this@MapHelper)
-                    mMap.apply {
-                        isMyLocationEnabled = true
-                        uiSettings.apply {
-                            isMyLocationButtonEnabled = true
-                            isScrollGesturesEnabled = true
-                            isZoomGesturesEnabled = true
-                        }
-                    }
+                    defreezeMap()
                     Toasty.success(
                         activity,
                         "Location successfully found!",
