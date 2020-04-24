@@ -115,10 +115,8 @@ class MapHelper(private val activity: MapsActivity, val mMap: GoogleMap) :
     }
 
     private suspend fun addShopsOnTheMap(shops: List<ShopsResponse.ShopsResponseItem>) {
-        activity.layout_footer_root.visibility = VISIBLE
+        activity.layout_footer_view.visibility = VISIBLE
         for (shop in shops) {
-            activity.layout_footer_text.text = shop.supermarket.name
-
             val position = shop.supermarket.getLocation()
             val iconBitmap = MapMarkerProvider(activity).buildMarkerViewAsync(shop)
             val icon = BitmapDescriptorFactory.fromBitmap(iconBitmap)
@@ -127,7 +125,7 @@ class MapHelper(private val activity: MapsActivity, val mMap: GoogleMap) :
 
             activity.layout_footer_view.removeAllViews()
         }
-        activity.layout_footer_root.visibility = GONE
+        activity.layout_footer_view.visibility = GONE
     }
 
     private fun launchSmartLocator(callback: (() -> Unit)? = null) {
@@ -153,7 +151,7 @@ class MapHelper(private val activity: MapsActivity, val mMap: GoogleMap) :
                         LENGTH_LONG,
                         true
                     ).show()
-                    if (callback != null) Timer().schedule(1000) {
+                    if (callback != null) Timer().schedule(5000) {
                         CoroutineScope(Dispatchers.Main).launch {
                             callback()
                         }
@@ -193,6 +191,6 @@ class MapHelper(private val activity: MapsActivity, val mMap: GoogleMap) :
                 }
             }
         }
-        return false
+        return true
     }
 }

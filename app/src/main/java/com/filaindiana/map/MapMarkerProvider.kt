@@ -47,6 +47,7 @@ class MapMarkerProvider(private val activity: MapsActivity) {
                     this.view_text_min.text = if (shop.state.queueWaitMinutes >= 0) "min" else ""
                     this.view_text_number.text = shop.state.queueWaitMinutes.toString()
                     this.view_text_bg.alpha = shop.state.getUpdateFreshness()
+                    this.view_text_bg.alpha = shop.state.getUpdateFreshness()
                 }
             }
             addMarkerView(marker)

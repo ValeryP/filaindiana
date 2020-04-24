@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">FilaIndiana</string>
     <string name="title_activity_maps">FilaIndiana</string>
+    <string name="only_opened">Only opened</string>
 </resources>

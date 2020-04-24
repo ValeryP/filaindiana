@@ -56,9 +56,13 @@ class ShopsResponse : ArrayList<ShopsResponse.ShopsResponseItem>() {
 
             fun getUpdateFreshness(): Float {
                 val lastUpdate = getUpdateTime()
-                val now = DateTime.now()
-                val hours = Interval(lastUpdate, now).toDuration().standardHours
-                return if (hours >= 10) 0.2f else (10 - hours) / 10f + 0.1f
+                return if (lastUpdate.isAfterNow) {
+                    1f
+                } else when (val hours =
+                    Interval(lastUpdate, DateTime.now()).toDuration().standardHours) {
+                    in 0..4 -> 1 - 0.2f * hours
+                    else -> 0.2f
+                }
             }
 
             @DrawableRes
