@@ -19,6 +19,7 @@ import androidx.annotation.RequiresApi
 import coil.api.load
 import com.filaindiana.R
 import com.filaindiana.network.ShopsResponse
+import com.filaindiana.utils.GraphicsProvider
 import kotlinx.android.synthetic.main.activity_maps.*
 import kotlinx.android.synthetic.main.view_marker.view.*
 import kotlinx.coroutines.CoroutineScope
@@ -57,9 +58,9 @@ class MapMarkerProvider(private val activity: MapsActivity) {
             }
             addMarkerView(marker)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                getBitmapFromViewO(marker)
+                GraphicsProvider.getBitmapFromViewO(marker, activity)
             } else {
-                getBitmapFromView(marker)
+                GraphicsProvider.getBitmapFromView(marker, activity)
             }
         }
 
@@ -74,53 +75,5 @@ class MapMarkerProvider(private val activity: MapsActivity) {
             })
         }
         activity.layout_footer_view.addView(marker)
-    }
-
-    @RequiresApi(Build.VERSION_CODES.O)
-    private suspend fun getBitmapFromViewO(view: View): Bitmap? =
-        suspendCoroutine { cont ->
-            val displayMetrics = DisplayMetrics()
-            activity.windowManager.defaultDisplay.getMetrics(displayMetrics)
-            view.measure(displayMetrics.widthPixels, displayMetrics.heightPixels)
-            val bitmap = Bitmap.createBitmap(
-                view.measuredWidth,
-                view.measuredHeight,
-                Bitmap.Config.ARGB_8888
-            )
-            val location = IntArray(2)
-            view.getLocationInWindow(location)
-            val rect = Rect(
-                location[0],
-                location[1],
-                location[0] + view.measuredWidth,
-                location[1] + view.measuredHeight
-            )
-            PixelCopy.request(
-                activity.window,
-                rect,
-                bitmap, {
-                    if (it == SUCCESS) {
-                        cont.resume(bitmap)
-                    }
-                },
-                Handler(Looper.getMainLooper())
-            )
-        }
-
-    private fun getBitmapFromView(view: View): Bitmap? {
-        val displayMetrics = DisplayMetrics()
-        activity.windowManager.defaultDisplay.getMetrics(displayMetrics)
-        view.measure(displayMetrics.widthPixels, displayMetrics.heightPixels)
-        view.layout(0, 0, view.measuredWidth, view.measuredHeight)
-        @Suppress("DEPRECATION")
-        view.buildDrawingCache()
-        val bitmap = Bitmap.createBitmap(
-            view.measuredWidth,
-            view.measuredHeight,
-            Bitmap.Config.ARGB_8888
-        )
-        val canvas = Canvas(bitmap)
-        view.draw(canvas)
-        return bitmap
     }
 }

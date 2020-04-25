@@ -8,9 +8,12 @@ import android.view.View.VISIBLE
 import androidx.appcompat.app.AppCompatActivity
 import com.filaindiana.R
 import com.filaindiana.utils.DialogProvider
+import com.filaindiana.worker.NotificationWorker
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.analytics.FirebaseAnalytics.Event.APP_OPEN
 import io.nlopez.smartlocation.SmartLocation
 import kotlinx.android.synthetic.main.activity_maps.*
 import pub.devrel.easypermissions.AfterPermissionGranted
@@ -24,10 +27,13 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, EasyPermissions.Pe
     EasyPermissions.RationaleCallbacks {
 
     private lateinit var mapHelper: MapHelper
+    lateinit var fa: FirebaseAnalytics
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_maps)
+        NotificationWorker.enqueue(this) //todo testing only
+        fa = FirebaseAnalytics.getInstance(this)
         (supportFragmentManager.findFragmentById(R.id.layout_map) as SupportMapFragment)
             .getMapAsync(this)
     }

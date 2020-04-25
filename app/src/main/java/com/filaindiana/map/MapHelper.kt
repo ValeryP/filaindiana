@@ -1,5 +1,6 @@
 package com.filaindiana.map
 
+import android.os.Bundle
 import android.util.Log
 import android.view.View.GONE
 import android.view.View.VISIBLE
@@ -12,14 +13,16 @@ import com.filaindiana.data.SubscriptionRepository
 import com.filaindiana.network.RestClient
 import com.filaindiana.network.ShopsResponse.Shop
 import com.filaindiana.utils.DialogProvider
+import com.filaindiana.utils.NotificationBuilder
 import com.filaindiana.utils.filterSubscribed
-import com.filaindiana.worker.NotificationWorker
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.firebase.analytics.FirebaseAnalytics.Event.GENERATE_LEAD
+import com.google.firebase.analytics.FirebaseAnalytics.Param.ITEM_NAME
 import es.dmoral.toasty.Toasty
 import io.nlopez.smartlocation.SmartLocation
 import io.nlopez.smartlocation.location.config.LocationParams
@@ -49,7 +52,10 @@ class MapHelper(private val activity: MapsActivity, val mMap: GoogleMap) :
         state = MapState()
         repo = SubscriptionRepository.getInstance(AppDB.getDatabase(activity).subscriptionDao())
         repo.getSubscriptions().observe(activity, Observer { state.setSubscriptions(it) })
-        state.shopsFiltered.observe(activity, Observer { invalidateMap(it) })
+        state.shopsFiltered.observe(activity, Observer { shops ->
+            NotificationBuilder.showNotification(shops.filter { it.shopData.name.contains("sse") }.take(1).shuffled(), activity)
+            invalidateMap(shops)
+        })
         state.filters.observe(activity, Observer { invalidateViews(it) })
     }
 
@@ -200,6 +206,7 @@ class MapHelper(private val activity: MapsActivity, val mMap: GoogleMap) :
                             shop.shopShopState?.queueSizePeople ?: 0,
                             shop.shopShopState?.queueWaitMinutes ?: 0,
                             shop.shopShopState?.getLastUpdate(),
+                            shop.shopData.isOpen,
                             subscription != null
                         ) {
                             CoroutineScope(Main).launch {
@@ -212,8 +219,12 @@ class MapHelper(private val activity: MapsActivity, val mMap: GoogleMap) :
                                         shop.shopData.lat.toDouble(),
                                         shop.shopData.long.toDouble()
                                     )
-                                    NotificationWorker.enqueue(activity)
                                     DialogProvider.showSubscribedDialog(activity)
+                                    activity.fa.logEvent(
+                                        GENERATE_LEAD,
+                                        Bundle().apply {
+                                            this.putString(ITEM_NAME, shop.shopData.brand)
+                                        })
                                 } else {
                                     repo.deleteSubscription(subscription.shopId)
                                     DialogProvider.showUnsubscribedDialog(activity, name)

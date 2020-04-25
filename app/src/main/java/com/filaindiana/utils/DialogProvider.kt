@@ -45,6 +45,7 @@ object DialogProvider {
         queueSizePeople: Int,
         queueWaitMinutes: Int,
         lastUpdateTime: String?,
+        isOpened: Boolean,
         isSubscribed: Boolean,
         onSubscribeClicked: () -> Unit
     ) {
@@ -54,8 +55,27 @@ object DialogProvider {
                 layout_dialogMarkerDetails_name.text = name
                 layout_dialogMarkerDetails_address.text = address
                 layout_dialogMarkerDetails_openHours.text = "Open: $openHours"
-                layout_dialogMarkerDetails_queue.text =
-                    "$queueSizePeople pers / $queueWaitMinutes min"
+                if (isOpened) {
+                    layout_dialogMarkerDetails_queue.text =
+                        "$queueSizePeople pers / $queueWaitMinutes min"
+                    layout_dialogMarkerDetails_queue.setTextColor(
+                        ResourcesCompat.getColor(
+                            ctx.resources,
+                            R.color.colorMarkerGreen,
+                            null
+                        )
+                    )
+                } else {
+                    layout_dialogMarkerDetails_queue.text =
+                        "Closed"
+                    layout_dialogMarkerDetails_queue.setTextColor(
+                        ResourcesCompat.getColor(
+                            ctx.resources,
+                            R.color.colorTextDark,
+                            null
+                        )
+                    )
+                }
                 layout_dialogMarkerDetails_update.text =
                     if (lastUpdateTime != null) "Last reported: $lastUpdateTime" else ""
                 if (isSubscribed) {
@@ -68,7 +88,7 @@ object DialogProvider {
                         ), MULTIPLY
                     )
                     layout_dialogMarkerDetails_button.setCompoundDrawablesWithIntrinsicBounds(
-                        IconsProvider.getColoredIcon(
+                        GraphicsProvider.getColoredIcon(
                             ctx,
                             R.drawable.ic_notifications_off_black_24dp,
                             R.color.colorTextWhite
@@ -87,7 +107,7 @@ object DialogProvider {
                         ), MULTIPLY
                     )
                     layout_dialogMarkerDetails_button.setCompoundDrawablesWithIntrinsicBounds(
-                        IconsProvider.getColoredIcon(
+                        GraphicsProvider.getColoredIcon(
                             ctx,
                             R.drawable.ic_notifications_active_black_24dp,
                             R.color.colorTextWhite
@@ -109,7 +129,7 @@ object DialogProvider {
         MaterialDialog(ctx).show {
             title(text = "Subscribed")
             icon(
-                drawable = IconsProvider.getColoredIcon(
+                drawable = GraphicsProvider.getColoredIcon(
                     ctx,
                     R.drawable.ic_notifications_active_black_24dp,
                     R.color.colorMarkerGreen
@@ -124,7 +144,7 @@ object DialogProvider {
         MaterialDialog(ctx).show {
             title(text = "Unsubscribed")
             icon(
-                drawable = IconsProvider.getColoredIcon(
+                drawable = GraphicsProvider.getColoredIcon(
                     ctx,
                     R.drawable.ic_notifications_off_black_24dp,
                     R.color.colorMarkerOrange
