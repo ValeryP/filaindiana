@@ -120,7 +120,7 @@ object DialogProvider {
         }
     }
 
-    fun showUnsubscribedDialog(ctx: Context) {
+    fun showUnsubscribedDialog(ctx: Context, name: String) {
         MaterialDialog(ctx).show {
             title(text = "Unsubscribed")
             icon(
@@ -130,7 +130,7 @@ object DialogProvider {
                     R.color.colorMarkerOrange
                 )
             )
-            message(text = "You will not longer receive the updates")
+            message(text = "You will not longer receive the updates for $name")
             positiveButton(text = "OK")
         }
     }

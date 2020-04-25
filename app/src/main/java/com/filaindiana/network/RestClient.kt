@@ -28,7 +28,7 @@ class RestClient private constructor(baseUrl: String) {
         service = retrofit.create(RestService::class.java)
     }
 
-    suspend fun getShopsLocations(lat: Double, lng: Double): ShopsResponse {
+    suspend fun getShops(lat: Double, lng: Double): ShopsResponse {
         val data = "{\"lat\":$lat,\"long\":$lng,\"debug\":\"false\"}"
         val body = RequestBody.create(MediaType.parse("application/octet-stream"), data)
         return service.getSupermarkets(body)

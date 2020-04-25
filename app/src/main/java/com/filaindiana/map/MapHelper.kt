@@ -13,6 +13,7 @@ import com.filaindiana.network.RestClient
 import com.filaindiana.network.ShopsResponse.Shop
 import com.filaindiana.utils.DialogProvider
 import com.filaindiana.utils.filterSubscribed
+import com.filaindiana.worker.NotificationWorker
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
@@ -122,7 +123,7 @@ class MapHelper(private val activity: MapsActivity, val mMap: GoogleMap) :
             mapJobs.add(CoroutineScope(Main).launch {
                 state.addNewFetchedLocation(mapLocation)
                 val shops = RestClient.build()
-                    .getShopsLocations(mapLocation.latitude, mapLocation.longitude)
+                    .getShops(mapLocation.latitude, mapLocation.longitude)
                 state.addShops(shops)
             })
         }
@@ -211,10 +212,11 @@ class MapHelper(private val activity: MapsActivity, val mMap: GoogleMap) :
                                         shop.shopData.lat.toDouble(),
                                         shop.shopData.long.toDouble()
                                     )
+                                    NotificationWorker.enqueue(activity)
                                     DialogProvider.showSubscribedDialog(activity)
                                 } else {
                                     repo.deleteSubscription(subscription.shopId)
-                                    DialogProvider.showUnsubscribedDialog(activity)
+                                    DialogProvider.showUnsubscribedDialog(activity, name)
                                 }
                             }
                         }
