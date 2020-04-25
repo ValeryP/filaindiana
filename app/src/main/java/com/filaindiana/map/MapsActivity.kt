@@ -4,11 +4,10 @@ import android.Manifest.permission.ACCESS_COARSE_LOCATION
 import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.View.VISIBLE
 import androidx.appcompat.app.AppCompatActivity
-import com.filaindiana.DialogProvider
 import com.filaindiana.R
+import com.filaindiana.utils.DialogProvider
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
@@ -96,19 +95,26 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, EasyPermissions.Pe
 
     private fun requestLocationSearch() {
         mapHelper.startLocationSearch {
-            layout_hide_closed.visibility = VISIBLE
-            layout_hide_closed.setOnTouchListener { v, event ->
-                v.onTouchEvent(event)
-                true
-            }
-            layout_hide_closed.setOnCheckedChangeListener { _, isOnlyOpened ->
-                layout_hide_closed.isEnabled = false
-                layout_hide_closed.isClickable = false
-                mapHelper.invalidateMarkers(isOnlyOpened) {
-                    layout_hide_closed.isEnabled = true
-                    layout_hide_closed.isClickable = true
-                }
-            }
+            setupClosedShopsSwitch()
+            setupSubscribedButton()
         }
+    }
+
+    private fun setupSubscribedButton() {
+        layout_show_subscribed.visibility = VISIBLE
+        layout_hide_closed.setOnTouchListener { v, event ->
+            v.onTouchEvent(event)
+            true
+        }
+        layout_show_subscribed.setOnClickListener { mapHelper.onShowSubscribedClick() }
+    }
+
+    private fun setupClosedShopsSwitch() {
+        layout_hide_closed.visibility = VISIBLE
+        layout_hide_closed.setOnTouchListener { v, event ->
+            v.onTouchEvent(event)
+            true
+        }
+        layout_hide_closed.setOnCheckedChangeListener { _, _ -> mapHelper.onShowOpenedClick() }
     }
 }

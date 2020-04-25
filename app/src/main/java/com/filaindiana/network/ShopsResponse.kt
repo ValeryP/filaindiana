@@ -12,14 +12,14 @@ import org.joda.time.Interval
 import org.joda.time.LocalDateTime
 import org.joda.time.format.DateTimeFormat
 
-class ShopsResponse : ArrayList<ShopsResponse.ShopsResponseItem>() {
-    data class ShopsResponseItem(
+class ShopsResponse : ArrayList<ShopsResponse.Shop>() {
+    data class Shop(
         @SerializedName("state")
-        val state: State?,
+        val shopShopState: ShopState?,
         @SerializedName("supermarket")
-        val supermarket: Supermarket
+        val shopData: ShopData
     ) {
-        data class State(
+        data class ShopState(
             @SerializedName("data_source")
             val dataSource: String,
             @SerializedName("market_id")
@@ -76,7 +76,7 @@ class ShopsResponse : ArrayList<ShopsResponse.ShopsResponseItem>() {
             }
         }
 
-        data class Supermarket(
+        data class ShopData(
             @SerializedName("address")
             val address: String,
             @SerializedName("average_waiting_time")

@@ -8,11 +8,12 @@ import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.util.DisplayMetrics
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.PixelCopy
 import android.view.PixelCopy.SUCCESS
 import android.view.View
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.view.ViewTreeObserver
 import androidx.annotation.RequiresApi
 import coil.api.load
@@ -32,22 +33,26 @@ import kotlin.coroutines.suspendCoroutine
  * Created on 22.04.2020
  */
 class MapMarkerProvider(private val activity: MapsActivity) {
-    suspend fun buildMarkerViewAsync(shop: ShopsResponse.ShopsResponseItem): Bitmap? =
+    suspend fun buildMarkerViewAsync(
+        shop: ShopsResponse.Shop,
+        isSubscriptionEnabled: Boolean
+    ): Bitmap? =
         withContext(CoroutineScope(Dispatchers.Main).coroutineContext) {
             val layoutInflater =
                 activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
             val marker: View = layoutInflater.inflate(R.layout.view_marker, null).apply {
-                this.view_img.load(shop.supermarket.getImgResId())
-                if (shop.state == null || !shop.supermarket.isOpen) {
+                this.view_img.load(shop.shopData.getImgResId())
+                this.view_subscription.visibility = if (isSubscriptionEnabled) VISIBLE else GONE
+                if (shop.shopShopState == null || !shop.shopData.isOpen) {
                     this.view_text_bg.setBackgroundResource(R.drawable.bg_rounded_grey)
                     this.view_text_number.text = ""
                     this.view_text_min.text = "Closed"
                 } else {
-                    this.view_text_bg.setBackgroundResource(shop.state.getStatusColor())
-                    this.view_text_min.text = if (shop.state.queueWaitMinutes >= 0) "min" else ""
-                    this.view_text_number.text = shop.state.queueWaitMinutes.toString()
-                    this.view_text_bg.alpha = shop.state.getUpdateFreshness()
-                    this.view_text_bg.alpha = shop.state.getUpdateFreshness()
+                    this.view_text_bg.setBackgroundResource(shop.shopShopState.getStatusColor())
+                    this.view_text_min.text =
+                        if (shop.shopShopState.queueWaitMinutes >= 0) "min" else ""
+                    this.view_text_number.text = shop.shopShopState.queueWaitMinutes.toString()
+                    this.view_text_bg.alpha = shop.shopShopState.getUpdateFreshness()
                 }
             }
             addMarkerView(marker)

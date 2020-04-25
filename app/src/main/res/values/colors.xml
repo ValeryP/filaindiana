@@ -9,6 +9,9 @@
     <color name="colorMarkerRed">#FC0D1B</color>
     <color name="colorMarkerGrey">#393B3A</color>
 
+    <color name="colorButtonGrey">#78909c</color>
+    <color name="colorButtonGreen">#4caf50</color>
+
     <color name="colorTextWhite">#FFF</color>
     <color name="colorTextBlack">#263238</color>
     <color name="colorTextDark">#37474f</color>
