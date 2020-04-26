@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#6200EE</color>
-    <color name="colorPrimaryDark">#3700B3</color>
-    <color name="colorAccent">#009688</color>
+    <color name="colorPrimary">#2196F3</color>
+    <color name="colorPrimaryDark">#1976D2</color>
+    <color name="colorAccent">#FF4081</color>
 
     <color name="colorMarkerGreen">#388E3C</color>
     <color name="colorMarkerOrange">#FF9800</color>
@@ -10,7 +10,6 @@
     <color name="colorMarkerGrey">#393B3A</color>
 
     <color name="colorButtonGrey">#78909c</color>
-    <color name="colorButtonGreen">#4caf50</color>
 
     <color name="colorTextWhite">#FFF</color>
     <color name="colorTextBlack">#263238</color>

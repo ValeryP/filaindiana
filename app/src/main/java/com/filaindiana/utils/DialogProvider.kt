@@ -102,7 +102,7 @@ object DialogProvider {
                     layout_dialogMarkerDetails_button.background.setColorFilter(
                         ResourcesCompat.getColor(
                             ctx.resources,
-                            R.color.colorButtonGreen,
+                            R.color.colorAccent,
                             null
                         ), MULTIPLY
                     )
