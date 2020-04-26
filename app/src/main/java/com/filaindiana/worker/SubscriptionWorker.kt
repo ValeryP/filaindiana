@@ -45,15 +45,10 @@ class NotificationWorker(appContext: Context, workerParams: WorkerParameters) :
         return try {
             val subscriptions = repo.getSubscriptionsSync()
             val shops = subscriptions.map { client.getShops(it.lat, it.lng) }.flatten()
-            val triggeredSubscription = subscriptions.mapNotNull { s ->
-                shops.firstOrNull { it.shopData.marketId == s.shopId }?.let { shop ->
-                    if ((shop.shopShopState?.queueWaitMinutes ?: Int.MAX_VALUE) < 15) {
-                        shop
-                    } else {
-                        null
-                    }
-                }
-            }.filter { it.shopData.isOpen }
+            val triggeredSubscription = subscriptions.filter { s ->
+                val shop = shops.firstOrNull { it.shopData.marketId == s.shopId }
+                shop != null && shop.shopData.isOpen && (shop.shopShopState?.queueWaitMinutes ?: Int.MAX_VALUE) < 15
+            }
             Log.v(
                 "xxx",
                 "${subscriptions.size} subscription, ${shops.size} shops, ${triggeredSubscription.size} alerts"

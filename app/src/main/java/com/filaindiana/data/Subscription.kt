@@ -2,6 +2,7 @@ package com.filaindiana.data
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.google.android.gms.maps.model.LatLng
 
 /*
  * @author Valeriy Palamarchuk
@@ -17,4 +18,6 @@ class Subscription(
     val lat: Double,
     val lng: Double,
     val isActive: Boolean
-)
+) {
+    fun getLocation() = LatLng(lat, lng)
+}

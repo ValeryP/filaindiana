@@ -16,6 +16,7 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.RequiresApi
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.DrawableCompat
+import com.filaindiana.R
 import com.filaindiana.map.MapsActivity
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
@@ -81,5 +82,35 @@ object GraphicsProvider {
         val canvas = Canvas(bitmap)
         view.draw(canvas)
         return bitmap
+    }
+
+    fun getShopImgResId(brand: String): Int {
+        return when (brand) {
+            "auchan" -> R.drawable.auchan
+            "bennet" -> R.drawable.bennet
+            "carrefour" -> R.drawable.carrefour
+            "coop" -> R.drawable.coop
+            "crai" -> R.drawable.crai
+            "despar" -> R.drawable.despar
+            "eataly" -> R.drawable.eataly
+            "ekom" -> R.drawable.ekom
+            "esselunga" -> R.drawable.esselunga
+            "eurospin" -> R.drawable.eurospin
+            "famila" -> R.drawable.famila
+            "galassia" -> R.drawable.galassia
+            "gigante" -> R.drawable.gigante
+            "iper" -> R.drawable.iper
+            "iperal" -> R.drawable.iperal
+            "lidl" -> R.drawable.lidl
+            "md" -> R.drawable.md
+            "naturasì" -> R.drawable.naturasi
+            "pam" -> R.drawable.pam
+            "penny" -> R.drawable.penny
+            "simply" -> R.drawable.simply
+            "superc" -> R.drawable.superc
+            "tigros" -> R.drawable.tigros
+            "unes" -> R.drawable.unes
+            else -> R.drawable.generic
+        }
     }
 }

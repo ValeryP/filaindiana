@@ -5,6 +5,7 @@ import android.text.format.DateUtils
 import android.text.format.DateUtils.MINUTE_IN_MILLIS
 import androidx.annotation.DrawableRes
 import com.filaindiana.R
+import com.filaindiana.utils.GraphicsProvider
 import com.google.android.gms.maps.model.LatLng
 import com.google.gson.annotations.SerializedName
 import org.joda.time.DateTime
@@ -109,39 +110,9 @@ class ShopsResponse : ArrayList<ShopsResponse.Shop>() {
                 return hours[dayOfWeek - 1].zipWithNext().first()
             }
 
-            fun getLocation(): LatLng {
-                return LatLng(lat.toDouble(), long.toDouble())
-            }
+            fun getLocation(): LatLng = LatLng(lat.toDouble(), long.toDouble())
 
-            fun getImgResId(): Int {
-                return when (brand) {
-                    "auchan" -> R.drawable.auchan
-                    "bennet" -> R.drawable.bennet
-                    "carrefour" -> R.drawable.carrefour
-                    "coop" -> R.drawable.coop
-                    "crai" -> R.drawable.crai
-                    "despar" -> R.drawable.despar
-                    "eataly" -> R.drawable.eataly
-                    "ekom" -> R.drawable.ekom
-                    "esselunga" -> R.drawable.esselunga
-                    "eurospin" -> R.drawable.eurospin
-                    "famila" -> R.drawable.famila
-                    "galassia" -> R.drawable.galassia
-                    "gigante" -> R.drawable.gigante
-                    "iper" -> R.drawable.iper
-                    "iperal" -> R.drawable.iperal
-                    "lidl" -> R.drawable.lidl
-                    "md" -> R.drawable.md
-                    "naturasì" -> R.drawable.naturasi
-                    "pam" -> R.drawable.pam
-                    "penny" -> R.drawable.penny
-                    "simply" -> R.drawable.simply
-                    "superc" -> R.drawable.superc
-                    "tigros" -> R.drawable.tigros
-                    "unes" -> R.drawable.unes
-                    else -> R.drawable.generic
-                }
-            }
+            fun getImgResId(): Int = GraphicsProvider.getShopImgResId(brand)
         }
     }
 }

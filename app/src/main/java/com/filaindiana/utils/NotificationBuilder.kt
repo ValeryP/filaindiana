@@ -13,8 +13,8 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.res.ResourcesCompat
 import com.filaindiana.R
+import com.filaindiana.data.Subscription
 import com.filaindiana.map.MapsActivity
-import com.filaindiana.network.ShopsResponse
 import com.filaindiana.worker.CHANNEL_ID
 import com.filaindiana.worker.UnsubscribeActionReceiver
 
@@ -27,7 +27,7 @@ object NotificationBuilder {
     const val KEY_SUBSCRIPTON_LOCATION = "SUBSCRIPTON_LOCATION"
     const val NOTIFICATION_ID = 101010
 
-    internal fun showNotification(subscriptions: List<ShopsResponse.Shop>, con: Context) {
+    internal fun showNotification(subscriptions: List<Subscription>, con: Context) {
         if (subscriptions.isEmpty()) return
 
         createNotificationChannel(con)
@@ -35,7 +35,7 @@ object NotificationBuilder {
             flags = FLAG_ACTIVITY_CLEAR_TOP or FLAG_ACTIVITY_SINGLE_TOP
             action = ACTION_MAIN
             addCategory(CATEGORY_LAUNCHER)
-            putExtra(KEY_SUBSCRIPTON_LOCATION, subscriptions.first().shopData.getLocation())
+            putExtra(KEY_SUBSCRIPTON_LOCATION, subscriptions.first().getLocation())
         }
         val unsubscribeIntent = Intent(con, UnsubscribeActionReceiver::class.java)
         val pendingIntentUnsubscribeIntent =
@@ -44,11 +44,11 @@ object NotificationBuilder {
             PendingIntent.getActivity(con, 0, activityIntent, FLAG_UPDATE_CURRENT)
         val content = "${subscriptions.size} shops have a queue < 15 min"
         val subscriptionShops =
-            subscriptions.joinToString(", ") { "${it.shopData.name} (${it.shopData.address})" }
+            subscriptions.joinToString(", ") { "${it.shopName} (${it.shopAddress})" }
         val contentBig = "$subscriptionShops have a queue < 15 min"
         val largeIcon = ResourcesCompat.getDrawable(
             con.resources,
-            subscriptions.first().shopData.getImgResId(),
+            GraphicsProvider.getShopImgResId(subscriptions.first().shopBrand),
             null
         )!!.toBitmapScaled(256).makeSquare()
         val builder = NotificationCompat.Builder(con, CHANNEL_ID)

@@ -1,6 +1,8 @@
 package com.filaindiana.map
 
+import android.Manifest.permission.ACCESS_COARSE_LOCATION
 import android.Manifest.permission.ACCESS_FINE_LOCATION
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
 import android.view.View.GONE
@@ -15,6 +17,7 @@ import com.filaindiana.data.SubscriptionRepository
 import com.filaindiana.network.RestClient
 import com.filaindiana.network.ShopsResponse.Shop
 import com.filaindiana.utils.DialogProvider
+import com.filaindiana.utils.NotificationBuilder
 import com.filaindiana.utils.PrefsUtils
 import com.filaindiana.utils.filterSubscribed
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -55,6 +58,7 @@ class MapHelper(private val activity: MapsActivity, val mMap: GoogleMap) :
         state = MapState()
         repo = SubscriptionRepository.getInstance(AppDB.getDatabase(activity).subscriptionDao())
         repo.getSubscriptions().observe(activity, Observer { state.setSubscriptions(it) })
+
         state.shopsFiltered.observe(activity, Observer { shops -> invalidateMap(shops) })
         state.filters.observe(activity, Observer { invalidateViews(it) })
     }
@@ -79,7 +83,7 @@ class MapHelper(private val activity: MapsActivity, val mMap: GoogleMap) :
 
     private fun invalidateMap(points: List<Shop>) {
         if (points.isEmpty() && state.shopsAll().isNotEmpty()) {
-            Toasty.info(activity, "No shops matching selected filters").show()
+            Toasty.info(activity, "No subscribed shops found, showing all").show()
             Timer().schedule(1000) { CoroutineScope(Main).launch { state.toogleSubscribed() } }
         }
         CoroutineScope(Main).launch {
@@ -107,13 +111,19 @@ class MapHelper(private val activity: MapsActivity, val mMap: GoogleMap) :
         }
     }
 
+    @SuppressLint("MissingPermission")
     private fun defreezeMap() {
         activity.layout_show_subscribed.isEnabled = true
         activity.layout_show_subscribed.isClickable = true
         activity.layout_hide_closed.isEnabled = true
         activity.layout_hide_closed.isClickable = true
         mMap.apply {
-            if (EasyPermissions.hasPermissions(activity, ACCESS_FINE_LOCATION)) {
+            if (EasyPermissions.hasPermissions(
+                    activity,
+                    ACCESS_FINE_LOCATION,
+                    ACCESS_COARSE_LOCATION
+                )
+            ) {
                 isMyLocationEnabled = true
             }
             uiSettings.apply {
@@ -143,18 +153,14 @@ class MapHelper(private val activity: MapsActivity, val mMap: GoogleMap) :
         if (state.closestLocationDistance(mapLocation) > 500) {
             mapJobs.forEach { it.cancel() }
             mapJobs.add(CoroutineScope(Main).launch {
-                state.addNewFetchedLocation(mapLocation)
-                val shops = RestClient.build()
-                    .getShops(mapLocation.latitude, mapLocation.longitude)
-                state.addShops(shops)
+                val restClient = RestClient.build()
+                val shops = restClient.getShops(mapLocation.latitude, mapLocation.longitude)
+                state.addNewFetchedLocation(mapLocation, shops)
             })
         }
     }
 
-    private suspend fun addShopsOnTheMap(
-        shops: List<Shop>,
-        subscriptions: List<Subscription>
-    ) {
+    private suspend fun addShopsOnTheMap(shops: List<Shop>, subscriptions: List<Subscription>) {
         val subscribedShops = state.shopsAll().filterSubscribed(subscriptions)
         activity.layout_footer_view.visibility = VISIBLE
         for (shop in shops) {
@@ -235,10 +241,13 @@ class MapHelper(private val activity: MapsActivity, val mMap: GoogleMap) :
                                         name,
                                         address,
                                         shop.shopData.brand,
-                                        shop.shopData.lat.toDouble(),
-                                        shop.shopData.long.toDouble()
+                                        state.getShopClusterLocation(shop).latitude,
+                                        state.getShopClusterLocation(shop).longitude
                                     )
-                                    DialogProvider.showSubscribedDialog(activity, shop.shopData.getImgResId())
+                                    DialogProvider.showSubscribedDialog(
+                                        activity,
+                                        shop.shopData.getImgResId()
+                                    )
                                     activity.fa.logEvent(
                                         GENERATE_LEAD,
                                         Bundle().apply {
@@ -246,7 +255,11 @@ class MapHelper(private val activity: MapsActivity, val mMap: GoogleMap) :
                                         })
                                 } else {
                                     repo.deleteSubscription(subscription.shopId)
-                                    DialogProvider.showUnsubscribedDialog(activity, name, shop.shopData.getImgResId())
+                                    DialogProvider.showUnsubscribedDialog(
+                                        activity,
+                                        name,
+                                        shop.shopData.getImgResId()
+                                    )
                                 }
                             }
                         }
