@@ -9,6 +9,7 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.lifecycle.Observer
 import com.filaindiana.R
 import com.filaindiana.data.AppDB
+import com.filaindiana.data.Subscription
 import com.filaindiana.data.SubscriptionRepository
 import com.filaindiana.network.RestClient
 import com.filaindiana.network.ShopsResponse.Shop
@@ -53,7 +54,8 @@ class MapHelper(private val activity: MapsActivity, val mMap: GoogleMap) :
         repo = SubscriptionRepository.getInstance(AppDB.getDatabase(activity).subscriptionDao())
         repo.getSubscriptions().observe(activity, Observer { state.setSubscriptions(it) })
         state.shopsFiltered.observe(activity, Observer { shops ->
-            NotificationBuilder.showNotification(shops.filter { it.shopData.name.contains("sse") }.take(1).shuffled(), activity)
+            NotificationBuilder.showNotification(shops.filter { it.shopData.name.contains("sse") }
+                .take(1).shuffled(), activity)
             invalidateMap(shops)
         })
         state.filters.observe(activity, Observer { invalidateViews(it) })
@@ -72,12 +74,16 @@ class MapHelper(private val activity: MapsActivity, val mMap: GoogleMap) :
         if (points.isEmpty() && state.shopsAll().isNotEmpty()) {
             Toasty.info(activity, "There are no shops available").show()
         }
+        mMap.clear()
+        freezeMap()
         CoroutineScope(Main).launch {
-            mMap.clear()
-            freezeMap()
-            addShopsOnTheMap(points)
-            defreezeMap()
+            val subscriptions = repo.getSubscriptionsSync()
+            addShopsOnTheMap(points, subscriptions)
+            val isSubscribedShopsVisible = points.filterSubscribed(subscriptions).isNotEmpty()
+            activity.layout_show_subscribed.visibility =
+                if (isSubscribedShopsVisible) VISIBLE else GONE
         }
+        defreezeMap()
     }
 
     private fun freezeMap() {
@@ -135,8 +141,11 @@ class MapHelper(private val activity: MapsActivity, val mMap: GoogleMap) :
         }
     }
 
-    private suspend fun addShopsOnTheMap(shops: List<Shop>) {
-        val subscribedShops = state.shopsAll().filterSubscribed(repo.getSubscriptionsSync())
+    private suspend fun addShopsOnTheMap(
+        shops: List<Shop>,
+        subscriptions: List<Subscription>
+    ) {
+        val subscribedShops = state.shopsAll().filterSubscribed(subscriptions)
         activity.layout_footer_view.visibility = VISIBLE
         for (shop in shops) {
             val position = shop.shopData.getLocation()

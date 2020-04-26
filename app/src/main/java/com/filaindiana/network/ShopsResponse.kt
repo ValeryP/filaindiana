@@ -106,7 +106,7 @@ class ShopsResponse : ArrayList<ShopsResponse.Shop>() {
                 val hours = openingHours.split(Regex("['\"]")).filter { it.contains(Regex("[:.]")) }
                     .chunked(2)
                 val dayOfWeek = DateTime.now().dayOfWeek
-                return hours[dayOfWeek].zipWithNext().first()
+                return hours[dayOfWeek - 1].zipWithNext().first()
             }
 
             fun getLocation(): LatLng {

@@ -107,7 +107,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, EasyPermissions.Pe
     }
 
     private fun setupSubscribedButton() {
-        layout_show_subscribed.visibility = VISIBLE
         layout_hide_closed.setOnTouchListener { v, event ->
             v.onTouchEvent(event)
             true
