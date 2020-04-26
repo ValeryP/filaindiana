@@ -40,7 +40,7 @@ class MapState {
     }
 
     fun toogleOpened() {
-        this.filters.value = filters.value!!.copy(isOpened = !this.filters.value!!.isOpened)
+        this.filters.value = filters.value!!.copy(isOnlyOpened = !this.filters.value!!.isOnlyOpened)
         this.shopsFiltered.value = shopsFiltered()
     }
 
@@ -60,7 +60,7 @@ class MapState {
 
     private fun shopsFiltered(): List<Shop> {
         var shops = shopsAll()
-        if (filters.value!!.isOpened) {
+        if (filters.value!!.isOnlyOpened) {
             shops = shops.filterOpen()
         }
         if (filters.value!!.isSubscribed) {

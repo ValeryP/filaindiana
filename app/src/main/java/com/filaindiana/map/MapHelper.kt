@@ -15,6 +15,7 @@ import com.filaindiana.network.RestClient
 import com.filaindiana.network.ShopsResponse.Shop
 import com.filaindiana.utils.DialogProvider
 import com.filaindiana.utils.NotificationBuilder
+import com.filaindiana.utils.PrefsUtils
 import com.filaindiana.utils.filterSubscribed
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -68,22 +69,31 @@ class MapHelper(private val activity: MapsActivity, val mMap: GoogleMap) :
             null
         )
         activity.layout_show_subscribed.drawable.setTint(color)
+        activity.layout_show_subscribed.alpha = if (filters.isSubscribed) 1f else 0.5f
+        if (filters.isSubscribed && !PrefsUtils.isOnboardingShownSubsctiptionFilter()) {
+            Toasty.info(activity, "Filtering for shops you subscribed").show()
+            PrefsUtils.setOnboardingShownSubsctiptionFilter()
+        }
+        if (filters.isOnlyOpened && !PrefsUtils.isOnboardingShownOpenedFilter()) {
+            Toasty.info(activity, "Filtering for opened shops only").show()
+            PrefsUtils.setOnboardingShownOpenedFilter()
+        }
     }
 
     private fun invalidateMap(points: List<Shop>) {
         if (points.isEmpty() && state.shopsAll().isNotEmpty()) {
-            Toasty.info(activity, "There are no shops available").show()
+            Toasty.info(activity, "No shops matching selected filters").show()
         }
-        mMap.clear()
-        freezeMap()
         CoroutineScope(Main).launch {
+            mMap.clear()
+            freezeMap()
             val subscriptions = repo.getSubscriptionsSync()
             addShopsOnTheMap(points, subscriptions)
-            val isSubscribedShopsVisible = points.filterSubscribed(subscriptions).isNotEmpty()
+            val isSubscribtionsVisible = points.filterSubscribed(subscriptions).isNotEmpty()
             activity.layout_show_subscribed.visibility =
-                if (isSubscribedShopsVisible) VISIBLE else GONE
+                if (isSubscribtionsVisible) VISIBLE else GONE
+            defreezeMap()
         }
-        defreezeMap()
     }
 
     private fun freezeMap() {

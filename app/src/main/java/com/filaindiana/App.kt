@@ -5,6 +5,7 @@ package com.filaindiana
 import android.app.Application
 import coil.ImageLoader
 import coil.util.CoilUtils
+import com.pixplicity.easyprefs.library.Prefs
 import net.danlew.android.joda.JodaTimeAndroid
 import okhttp3.OkHttpClient
 
@@ -26,5 +27,11 @@ class App : Application() {
                     .build()
             }
         }
+        Prefs.Builder()
+            .setContext(this)
+            .setMode(MODE_PRIVATE)
+            .setPrefsName(packageName)
+            .setUseDefaultSharedPreference(true)
+            .build()
     }
 }
