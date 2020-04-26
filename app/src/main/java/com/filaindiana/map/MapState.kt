@@ -3,11 +3,13 @@ package com.filaindiana.map
 import androidx.lifecycle.MutableLiveData
 import com.filaindiana.data.Subscription
 import com.filaindiana.network.ShopsResponse.Shop
+import com.filaindiana.utils.PrefsUtils
 import com.filaindiana.utils.default
 import com.filaindiana.utils.filterOpen
 import com.filaindiana.utils.filterSubscribed
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.SphericalUtil
+import retrofit2.http.PUT
 
 
 /*
@@ -40,12 +42,16 @@ class MapState {
     }
 
     fun toogleOpened() {
-        this.filters.value = filters.value!!.copy(isOnlyOpened = !this.filters.value!!.isOnlyOpened)
+        val isOnlyOpenedNew = !this.filters.value!!.isOnlyOpened
+        PrefsUtils.setOpenedFilter(isOnlyOpenedNew)
+        this.filters.value = filters.value!!.copy(isOnlyOpened = isOnlyOpenedNew)
         this.shopsFiltered.value = shopsFiltered()
     }
 
     fun toogleSubscribed() {
-        this.filters.value = filters.value!!.copy(isSubscribed = !this.filters.value!!.isSubscribed)
+        val isSubscribedNew = !this.filters.value!!.isSubscribed
+        PrefsUtils.setSubsctiptionFilter(isSubscribedNew)
+        this.filters.value = filters.value!!.copy(isSubscribed = isSubscribedNew)
         this.shopsFiltered.value = shopsFiltered()
     }
 
@@ -63,7 +69,7 @@ class MapState {
         if (filters.value!!.isOnlyOpened) {
             shops = shops.filterOpen()
         }
-        if (filters.value!!.isSubscribed) {
+        if (filters.value!!.isSubscribed && ::subscriptions.isInitialized) {
             shops = shops.filterSubscribed(subscriptions)
         }
         return shops

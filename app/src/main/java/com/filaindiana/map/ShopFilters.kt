@@ -1,5 +1,7 @@
 package com.filaindiana.map
 
+import com.filaindiana.utils.PrefsUtils
+
 /*
  * @author Valeriy Palamarchuk
  * @email valeriij.palamarchuk@gmail.com
@@ -7,6 +9,9 @@ package com.filaindiana.map
  */
 data class ShopFilters(var isOnlyOpened: Boolean, var isSubscribed: Boolean) {
     companion object {
-        fun defaultState() = ShopFilters(isOnlyOpened = false, isSubscribed = false)
+        fun defaultState() = ShopFilters(
+            isOnlyOpened = PrefsUtils.isOpenedFilter(),
+            isSubscribed = PrefsUtils.isSubsctiptionFilter()
+        )
     }
 }

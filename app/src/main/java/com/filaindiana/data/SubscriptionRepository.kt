@@ -30,10 +30,14 @@ class SubscriptionRepository private constructor(private val subscriptionsDao: S
         )
     }
 
-
     @WorkerThread
     suspend fun deleteSubscription(shopId: String) = withContext(Dispatchers.IO) {
         subscriptionsDao.delete(shopId)
+    }
+
+    @WorkerThread
+    suspend fun deleteSubscriptions() = withContext(Dispatchers.IO) {
+        subscriptionsDao.deleteAll()
     }
 
     companion object {

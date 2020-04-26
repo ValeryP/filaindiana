@@ -4,16 +4,19 @@ import android.Manifest.permission.ACCESS_COARSE_LOCATION
 import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View.VISIBLE
 import androidx.appcompat.app.AppCompatActivity
 import com.filaindiana.R
 import com.filaindiana.utils.DialogProvider
+import com.filaindiana.utils.NotificationBuilder.KEY_SUBSCRIPTON_LOCATION
+import com.filaindiana.utils.PrefsUtils
 import com.filaindiana.worker.NotificationWorker
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.analytics.FirebaseAnalytics
-import com.google.firebase.analytics.FirebaseAnalytics.Event.APP_OPEN
 import io.nlopez.smartlocation.SmartLocation
 import kotlinx.android.synthetic.main.activity_maps.*
 import pub.devrel.easypermissions.AfterPermissionGranted
@@ -28,9 +31,12 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, EasyPermissions.Pe
 
     private lateinit var mapHelper: MapHelper
     lateinit var fa: FirebaseAnalytics
+    private var subscriptionLocation: LatLng? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        subscriptionLocation = intent?.extras?.getParcelable(KEY_SUBSCRIPTON_LOCATION)
+        Log.v("xxx", "onCreate: $subscriptionLocation")
         setContentView(R.layout.activity_maps)
         NotificationWorker.enqueue(this) //todo testing only
         fa = FirebaseAnalytics.getInstance(this)
@@ -38,15 +44,16 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, EasyPermissions.Pe
             .getMapAsync(this)
     }
 
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        subscriptionLocation = intent?.extras?.getParcelable(KEY_SUBSCRIPTON_LOCATION)
+        Log.v("xxx", "onNewIntent: $subscriptionLocation")
+        askLocationPermissions()
+    }
 
     override fun onMapReady(googleMap: GoogleMap) {
         mapHelper = MapHelper(this, googleMap)
         askLocationPermissions()
-    }
-
-    override fun onResume() {
-        super.onResume()
-        if (::mapHelper.isInitialized) askLocationPermissions()
     }
 
     override fun onDestroy() {
@@ -100,14 +107,18 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, EasyPermissions.Pe
     }
 
     private fun requestLocationSearch() {
-        mapHelper.startLocationSearch {
-            setupClosedShopsSwitch()
-            setupSubscribedButton()
+        mapHelper.startLocationSearch { userLocation ->
+            val zoomLocation = subscriptionLocation ?: userLocation
+            mapHelper.focusMap(zoomLocation) {
+                subscriptionLocation = null
+                setupClosedShopsSwitch()
+                setupSubscribedButton()
+            }
         }
     }
 
     private fun setupSubscribedButton() {
-        layout_hide_closed.setOnTouchListener { v, event ->
+        layout_show_subscribed.setOnTouchListener { v, event ->
             v.onTouchEvent(event)
             true
         }
@@ -116,6 +127,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, EasyPermissions.Pe
 
     private fun setupClosedShopsSwitch() {
         layout_hide_closed.visibility = VISIBLE
+        layout_hide_closed.isChecked = PrefsUtils.isOpenedFilter()
         layout_hide_closed.setOnTouchListener { v, event ->
             v.onTouchEvent(event)
             true

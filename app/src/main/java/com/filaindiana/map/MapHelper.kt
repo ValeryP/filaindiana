@@ -1,5 +1,6 @@
 package com.filaindiana.map
 
+import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.os.Bundle
 import android.util.Log
 import android.view.View.GONE
@@ -14,7 +15,6 @@ import com.filaindiana.data.SubscriptionRepository
 import com.filaindiana.network.RestClient
 import com.filaindiana.network.ShopsResponse.Shop
 import com.filaindiana.utils.DialogProvider
-import com.filaindiana.utils.NotificationBuilder
 import com.filaindiana.utils.PrefsUtils
 import com.filaindiana.utils.filterSubscribed
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -34,6 +34,7 @@ import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import pub.devrel.easypermissions.EasyPermissions
 import java.util.*
 import kotlin.concurrent.schedule
 
@@ -54,11 +55,7 @@ class MapHelper(private val activity: MapsActivity, val mMap: GoogleMap) :
         state = MapState()
         repo = SubscriptionRepository.getInstance(AppDB.getDatabase(activity).subscriptionDao())
         repo.getSubscriptions().observe(activity, Observer { state.setSubscriptions(it) })
-        state.shopsFiltered.observe(activity, Observer { shops ->
-            NotificationBuilder.showNotification(shops.filter { it.shopData.name.contains("sse") }
-                .take(1).shuffled(), activity)
-            invalidateMap(shops)
-        })
+        state.shopsFiltered.observe(activity, Observer { shops -> invalidateMap(shops) })
         state.filters.observe(activity, Observer { invalidateViews(it) })
     }
 
@@ -83,6 +80,7 @@ class MapHelper(private val activity: MapsActivity, val mMap: GoogleMap) :
     private fun invalidateMap(points: List<Shop>) {
         if (points.isEmpty() && state.shopsAll().isNotEmpty()) {
             Toasty.info(activity, "No shops matching selected filters").show()
+            Timer().schedule(1000) { CoroutineScope(Main).launch { state.toogleSubscribed() } }
         }
         CoroutineScope(Main).launch {
             mMap.clear()
@@ -115,7 +113,9 @@ class MapHelper(private val activity: MapsActivity, val mMap: GoogleMap) :
         activity.layout_hide_closed.isEnabled = true
         activity.layout_hide_closed.isClickable = true
         mMap.apply {
-            isMyLocationEnabled = true
+            if (EasyPermissions.hasPermissions(activity, ACCESS_FINE_LOCATION)) {
+                isMyLocationEnabled = true
+            }
             uiSettings.apply {
                 isMyLocationButtonEnabled = false
                 isScrollGesturesEnabled = true
@@ -124,7 +124,7 @@ class MapHelper(private val activity: MapsActivity, val mMap: GoogleMap) :
         }
     }
 
-    fun startLocationSearch(callback: (() -> Unit)? = null) {
+    fun startLocationSearch(callback: ((location: LatLng) -> Unit)? = null) {
         Log.v("xxx", "SmartLocation.with()")
         val isGpsEnabled = SmartLocation.with(activity).location().state().isGpsAvailable
         if (isGpsEnabled) {
@@ -171,17 +171,17 @@ class MapHelper(private val activity: MapsActivity, val mMap: GoogleMap) :
         activity.layout_footer_view.visibility = GONE
     }
 
-    private fun launchSmartLocator(callback: (() -> Unit)? = null) {
+    private fun launchSmartLocator(callback: ((location: LatLng) -> Unit)? = null) {
         Toasty.info(activity, "Looking for your location...", LENGTH_LONG, true).show()
         SmartLocation.with(activity).location().apply { config(LocationParams.NAVIGATION) }.oneFix()
             .start {
                 val userLocation = LatLng(it.latitude, it.longitude)
                 Log.v("xxx", "Location: $userLocation")
-                focusMapUserLocation(userLocation, callback)
+                callback?.invoke(userLocation)
             }
     }
 
-    private fun focusMapUserLocation(location: LatLng, callback: (() -> Unit)? = null) {
+    fun focusMap(location: LatLng, callback: (() -> Unit)? = null) {
         mMap.animateCamera(
             CameraUpdateFactory.newLatLngZoom(location, 15f),
             object : GoogleMap.CancelableCallback {
@@ -238,7 +238,7 @@ class MapHelper(private val activity: MapsActivity, val mMap: GoogleMap) :
                                         shop.shopData.lat.toDouble(),
                                         shop.shopData.long.toDouble()
                                     )
-                                    DialogProvider.showSubscribedDialog(activity)
+                                    DialogProvider.showSubscribedDialog(activity, shop.shopData.getImgResId())
                                     activity.fa.logEvent(
                                         GENERATE_LEAD,
                                         Bundle().apply {
@@ -246,7 +246,7 @@ class MapHelper(private val activity: MapsActivity, val mMap: GoogleMap) :
                                         })
                                 } else {
                                     repo.deleteSubscription(subscription.shopId)
-                                    DialogProvider.showUnsubscribedDialog(activity, name)
+                                    DialogProvider.showUnsubscribedDialog(activity, name, shop.shopData.getImgResId())
                                 }
                             }
                         }

@@ -29,4 +29,7 @@ interface SubscriptionDao {
 
     @Query("DELETE FROM subscriptions WHERE shopId = :shopId")
     suspend fun delete(shopId: String)
+
+    @Query("DELETE FROM subscriptions")
+    suspend fun deleteAll()
 }

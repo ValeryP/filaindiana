@@ -125,31 +125,19 @@ object DialogProvider {
         }
     }
 
-    fun showSubscribedDialog(ctx: Context) {
+    fun showSubscribedDialog(ctx: Context, imgResId: Int) {
         MaterialDialog(ctx).show {
             title(text = "Subscribed")
-            icon(
-                drawable = GraphicsProvider.getColoredIcon(
-                    ctx,
-                    R.drawable.ic_notifications_active_black_24dp,
-                    R.color.colorMarkerGreen
-                )
-            )
+            icon(imgResId)
             message(text = "You're subscribed for the updates. We'll notify you once the queue waiting time become less than 15 min.")
             positiveButton(text = "OK")
         }
     }
 
-    fun showUnsubscribedDialog(ctx: Context, name: String) {
+    fun showUnsubscribedDialog(ctx: Context, name: String, imgResId: Int) {
         MaterialDialog(ctx).show {
             title(text = "Unsubscribed")
-            icon(
-                drawable = GraphicsProvider.getColoredIcon(
-                    ctx,
-                    R.drawable.ic_notifications_off_black_24dp,
-                    R.color.colorMarkerOrange
-                )
-            )
+            icon(imgResId)
             message(text = "You will not longer receive the updates for $name")
             positiveButton(text = "OK")
         }
