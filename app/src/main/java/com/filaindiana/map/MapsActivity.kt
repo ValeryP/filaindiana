@@ -2,6 +2,7 @@ package com.filaindiana.map
 
 import android.Manifest.permission.ACCESS_COARSE_LOCATION
 import android.Manifest.permission.ACCESS_FINE_LOCATION
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -10,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.filaindiana.R
 import com.filaindiana.utils.DialogProvider
 import com.filaindiana.utils.NotificationBuilder.KEY_SUBSCRIPTON_LOCATION
+import com.filaindiana.utils.OnboardingManager
 import com.filaindiana.utils.PrefsUtils
 import com.filaindiana.worker.NotificationWorker
 import com.google.android.gms.maps.GoogleMap
@@ -113,10 +115,12 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, EasyPermissions.Pe
                 subscriptionLocation = null
                 setupClosedShopsSwitch()
                 setupSubscribedButton()
+                OnboardingManager.startOnboarding(this@MapsActivity)
             }
         }
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private fun setupSubscribedButton() {
         layout_show_subscribed.setOnTouchListener { v, event ->
             v.onTouchEvent(event)
@@ -125,6 +129,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, EasyPermissions.Pe
         layout_show_subscribed.setOnClickListener { mapHelper.onShowSubscribedClick() }
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private fun setupClosedShopsSwitch() {
         layout_hide_closed.visibility = VISIBLE
         layout_hide_closed.isChecked = PrefsUtils.isOpenedFilter()

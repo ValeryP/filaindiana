@@ -17,7 +17,6 @@ import com.filaindiana.data.SubscriptionRepository
 import com.filaindiana.network.RestClient
 import com.filaindiana.network.ShopsResponse.Shop
 import com.filaindiana.utils.DialogProvider
-import com.filaindiana.utils.NotificationBuilder
 import com.filaindiana.utils.PrefsUtils
 import com.filaindiana.utils.filterSubscribed
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -92,8 +91,12 @@ class MapHelper(private val activity: MapsActivity, val mMap: GoogleMap) :
             val subscriptions = repo.getSubscriptionsSync()
             addShopsOnTheMap(points, subscriptions)
             val isSubscribtionsVisible = points.filterSubscribed(subscriptions).isNotEmpty()
-            activity.layout_show_subscribed.visibility =
-                if (isSubscribtionsVisible) VISIBLE else GONE
+            if (isSubscribtionsVisible) {
+//                OnboardingManager.showSubscribtionsOnboarding(activity)
+                activity.layout_show_subscribed.visibility = VISIBLE
+            } else {
+                activity.layout_show_subscribed.visibility = GONE
+            }
             defreezeMap()
         }
     }
@@ -227,7 +230,13 @@ class MapHelper(private val activity: MapsActivity, val mMap: GoogleMap) :
                             shop.shopData.getImgResId(),
                             name,
                             address,
-                            shop.shopData.getOpeningHours().let { "${it.first} - ${it.second}" },
+                            shop.shopData.getOpeningHours().let {
+                                if (it.size == 2) {
+                                    "${it[0]} - ${it[1]}"
+                                } else {
+                                    "${it[0]} - ${it[1]}, ${it[2]} - ${it[3]}"
+                                }
+                            },
                             shop.shopShopState?.queueSizePeople ?: 0,
                             shop.shopShopState?.queueWaitMinutes ?: 0,
                             shop.shopShopState?.getLastUpdate(),

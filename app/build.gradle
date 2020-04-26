@@ -64,6 +64,7 @@ dependencies {
     implementation 'br.com.simplepass:loading-button-android:2.2.0'
     implementation "androidx.work:work-runtime-ktx:2.3.4"
     implementation 'com.pixplicity.easyprefs:library:1.9.0'
+    implementation 'com.github.wooplr:Spotlight:1.2.3'
 
     testImplementation 'junit:junit:4.13'
 

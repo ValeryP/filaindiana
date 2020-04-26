@@ -103,12 +103,29 @@ class ShopsResponse : ArrayList<ShopsResponse.Shop>() {
             @SerializedName("updated_at")
             val updatedAt: String
         ) {
-            fun getOpeningHours(): Pair<String, String> {
-                val hours = openingHours.split(Regex("['\"]")).filter { it.contains(Regex("[:.]")) }
-                    .chunked(2)
-                val dayOfWeek = DateTime.now().dayOfWeek
-                return hours[dayOfWeek - 1].zipWithNext().first()
-            }
+            @Suppress("NestedLambdaShadowedImplicitParameter")
+            fun getOpeningHours() = openingHours.split("[[")
+                .map { it.replace(Regex("[\\[\\]\']"), "") }
+                .filter { it.length > 4 }
+                .map {
+                    it.split(",")
+                        .map { it.trim() }
+                        .filter { it.length > 4 }
+                }
+                .map {
+                    if (it.size > 2) {
+                        val result = mutableListOf<String>()
+                        it.forEach {
+                            if (it.count { it == '.' } == 1) {
+                                result.add(it)
+                            } else {
+                                result.add(it.slice(0 until it.length / 2))
+                                result.add(it.slice(it.length / 2 until it.length))
+                            }
+                        }
+                        result
+                    } else it
+                }[DateTime.now().dayOfWeek - 1]
 
             fun getLocation(): LatLng = LatLng(lat.toDouble(), long.toDouble())
 
