@@ -105,7 +105,7 @@ class ShopsResponse : ArrayList<ShopsResponse.Shop>() {
         ) {
             @Suppress("NestedLambdaShadowedImplicitParameter")
             fun getOpeningHours() = openingHours.split("[[")
-                .map { it.replace(Regex("[\\[\\]\']"), "") }
+                .map { it.replace(Regex("[\\[\\]\'\"]"), "") }
                 .filter { it.length > 4 }
                 .map {
                     it.split(",")

@@ -40,7 +40,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, EasyPermissions.Pe
         subscriptionLocation = intent?.extras?.getParcelable(KEY_SUBSCRIPTON_LOCATION)
         Log.v("xxx", "onCreate: $subscriptionLocation")
         setContentView(R.layout.activity_maps)
-        NotificationWorker.enqueue(this) //todo testing only
+        NotificationWorker.enqueue(this)
         fa = FirebaseAnalytics.getInstance(this)
         (supportFragmentManager.findFragmentById(R.id.layout_map) as SupportMapFragment)
             .getMapAsync(this)
@@ -71,7 +71,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, EasyPermissions.Pe
         } else {
             EasyPermissions.requestPermissions(
                 this,
-                "The app requires location permission",
+                getString(R.string.app_requires_location_permission),
                 RC_PERMISSIONS_LOCATION,
                 *perms
             )
@@ -115,7 +115,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, EasyPermissions.Pe
                 subscriptionLocation = null
                 setupClosedShopsSwitch()
                 setupSubscribedButton()
-                OnboardingManager.startOnboarding(this@MapsActivity)
+                OnboardingManager.startOnlyClosedOnboarding(this@MapsActivity)
             }
         }
     }

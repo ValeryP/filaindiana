@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import com.filaindiana.R
 
 /*
  * @author Valeriy Palamarchuk
@@ -23,7 +24,10 @@ abstract class AppDB : RoomDatabase() {
         }
 
         private fun buildDatabase(ctx: Context) =
-            Room.databaseBuilder(ctx.applicationContext, AppDB::class.java, "db-filaindiana")
-                .build()
+            Room.databaseBuilder(
+                ctx.applicationContext,
+                AppDB::class.java,
+                ctx.getString(R.string.db_name)
+            ).build()
     }
 }

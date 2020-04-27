@@ -1,5 +1,35 @@
 <resources>
-    <string name="app_name">FilaIndiana</string>
-    <string name="title_activity_maps">FilaIndiana</string>
+    <string name="app_name" translatable="false">FilaIndiana</string>
+    <string name="db_name" translatable="false">db-filaindiana</string>
+
     <string name="only_opened">Only opened</string>
+    <string name="filter_shops_subscribed">Filtering for shops you subscribed</string>
+    <string name="filter_shops_opened">Filtering for opened shops only</string>
+    <string name="no_subscribed_shops">No subscribed shops found, showing all</string>
+    <string name="looking_for_location">Looking for your location…</string>
+    <string name="location_found">Location successfully found!</string>
+    <string name="closed">Closed</string>
+    <string name="min">min</string>
+    <string name="app_requires_location_permission">The app requires location permission</string>
+    <string name="permission_required">Permission required</string>
+    <string name="enable_gps">Enable GPS to find closest supermarkets</string>
+    <string name="enable">Enable</string>
+    <string name="exit">Exit</string>
+    <string name="open_hours">Open: %1$s</string>
+    <string name="last_reported">Last reported: %1$s</string>
+    <string name="queue">%1$d pers / %2$d min</string>
+    <string name="queue_details">%1$s shops have a queue less than 15 min</string>
+    <string name="unsubscribe">Unsubscribe</string>
+    <string name="subscribe_for_updates">Subscribe for updates</string>
+    <string name="subscribed">Subscribed</string>
+    <string name="subscribed_details">You\'re subscribed for the updates. We\'ll notify you once the queue waiting time become less than 15 min.</string>
+    <string name="unsubscribed">Unsubscribed</string>
+    <string name="no_updates">"You will not longer receive the updates for %1$s"</string>
+    <string name="requires_location_permission_details">The app requires location permission to find closest shops. Click "Enable" to open an application settings screen and grant permissions.</string>
+    <string name="time_to_shop">Time to shop!</string>
+    <string name="unsibscribe_all">Unsubscribe all</string>
+    <string name="notification_channel_description">Notification when the supermarket has a queue less than 15 min</string>
+    <string name="only_shops_currently_opened">Show only supermarkets which are currently opened</string>
+    <string name="show_subscriptions">Show subscriptions</string>
+    <string name="only_shops_currently_subscribed">Show only supermarkets which you are currently subscribed for updates</string>
 </resources>

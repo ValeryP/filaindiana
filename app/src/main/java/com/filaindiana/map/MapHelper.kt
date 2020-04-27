@@ -17,6 +17,7 @@ import com.filaindiana.data.SubscriptionRepository
 import com.filaindiana.network.RestClient
 import com.filaindiana.network.ShopsResponse.Shop
 import com.filaindiana.utils.DialogProvider
+import com.filaindiana.utils.OnboardingManager
 import com.filaindiana.utils.PrefsUtils
 import com.filaindiana.utils.filterSubscribed
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -57,7 +58,6 @@ class MapHelper(private val activity: MapsActivity, val mMap: GoogleMap) :
         state = MapState()
         repo = SubscriptionRepository.getInstance(AppDB.getDatabase(activity).subscriptionDao())
         repo.getSubscriptions().observe(activity, Observer { state.setSubscriptions(it) })
-
         state.shopsFiltered.observe(activity, Observer { shops -> invalidateMap(shops) })
         state.filters.observe(activity, Observer { invalidateViews(it) })
     }
@@ -71,33 +71,34 @@ class MapHelper(private val activity: MapsActivity, val mMap: GoogleMap) :
         activity.layout_show_subscribed.drawable.setTint(color)
         activity.layout_show_subscribed.alpha = if (filters.isSubscribed) 1f else 0.5f
         if (filters.isSubscribed && !PrefsUtils.isOnboardingShownSubsctiptionFilter()) {
-            Toasty.info(activity, "Filtering for shops you subscribed").show()
+            Toasty.info(activity, activity.getString(R.string.filter_shops_subscribed)).show()
             PrefsUtils.setOnboardingShownSubsctiptionFilter()
         }
         if (filters.isOnlyOpened && !PrefsUtils.isOnboardingShownOpenedFilter()) {
-            Toasty.info(activity, "Filtering for opened shops only").show()
+            Toasty.info(activity, activity.getString(R.string.filter_shops_opened)).show()
             PrefsUtils.setOnboardingShownOpenedFilter()
         }
     }
 
     private fun invalidateMap(points: List<Shop>) {
         if (points.isEmpty() && state.shopsAll().isNotEmpty()) {
-            Toasty.info(activity, "No subscribed shops found, showing all").show()
+            Toasty.info(activity, activity.getString(R.string.no_subscribed_shops)).show()
             Timer().schedule(1000) { CoroutineScope(Main).launch { state.toogleSubscribed() } }
-        }
-        CoroutineScope(Main).launch {
-            mMap.clear()
-            freezeMap()
-            val subscriptions = repo.getSubscriptionsSync()
-            addShopsOnTheMap(points, subscriptions)
-            val isSubscribtionsVisible = points.filterSubscribed(subscriptions).isNotEmpty()
-            if (isSubscribtionsVisible) {
-//                OnboardingManager.showSubscribtionsOnboarding(activity)
-                activity.layout_show_subscribed.visibility = VISIBLE
-            } else {
-                activity.layout_show_subscribed.visibility = GONE
+        } else {
+            CoroutineScope(Main).launch {
+                mMap.clear()
+                freezeMap()
+                val subscriptions = repo.getSubscriptionsSync()
+                addShopsOnTheMap(points, subscriptions)
+                val isSubscribtionsVisible = points.filterSubscribed(subscriptions).isNotEmpty()
+                if (isSubscribtionsVisible) {
+                    OnboardingManager.startOnlySubscribtionOnboarding(activity)
+                    activity.layout_show_subscribed.visibility = VISIBLE
+                } else {
+                    activity.layout_show_subscribed.visibility = GONE
+                }
+                defreezeMap()
             }
-            defreezeMap()
         }
     }
 
@@ -181,7 +182,8 @@ class MapHelper(private val activity: MapsActivity, val mMap: GoogleMap) :
     }
 
     private fun launchSmartLocator(callback: ((location: LatLng) -> Unit)? = null) {
-        Toasty.info(activity, "Looking for your location...", LENGTH_LONG, true).show()
+        Toasty.info(activity, activity.getString(R.string.looking_for_location), LENGTH_LONG, true)
+            .show()
         SmartLocation.with(activity).location().apply { config(LocationParams.NAVIGATION) }.oneFix()
             .start {
                 val userLocation = LatLng(it.latitude, it.longitude)
@@ -199,7 +201,7 @@ class MapHelper(private val activity: MapsActivity, val mMap: GoogleMap) :
                     defreezeMap()
                     Toasty.success(
                         activity,
-                        "Location successfully found!",
+                        activity.getString(R.string.location_found),
                         LENGTH_LONG,
                         true
                     ).show()

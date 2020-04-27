@@ -21,16 +21,16 @@ import kotlinx.android.synthetic.main.dialog_marker_details.view.*
 object DialogProvider {
     fun showGpsRequiredDialog(ctx: Context) {
         MaterialDialog(ctx).show {
-            title(text = "Permission required")
-            message(text = "Enable GPS to find closest supermarkets")
+            title(text = ctx.getString(R.string.permission_required))
+            message(text = ctx.getString(R.string.enable_gps))
             cancelable(false)
-            positiveButton(text = "Enable") {
+            positiveButton(text = ctx.getString(R.string.enable)) {
                 (ctx as Activity).startActivityForResult(
                     Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS),
                     1
                 )
             }
-            negativeButton(text = "Exit") {
+            negativeButton(text = ctx.getString(R.string.exit)) {
                 (ctx as Activity).finishAndRemoveTask()
             }
         }
@@ -54,10 +54,11 @@ object DialogProvider {
                 layout_dialogMarkerDetails_img.setImageResource(iconRes)
                 layout_dialogMarkerDetails_name.text = name
                 layout_dialogMarkerDetails_address.text = address
-                layout_dialogMarkerDetails_openHours.text = "Open: $openHours"
+                layout_dialogMarkerDetails_openHours.text =
+                    ctx.getString(R.string.open_hours, openHours)
                 if (isOpened) {
                     layout_dialogMarkerDetails_queue.text =
-                        "$queueSizePeople pers / $queueWaitMinutes min"
+                        ctx.getString(R.string.queue, queueSizePeople, queueWaitMinutes)
                     layout_dialogMarkerDetails_queue.setTextColor(
                         ResourcesCompat.getColor(
                             ctx.resources,
@@ -66,8 +67,7 @@ object DialogProvider {
                         )
                     )
                 } else {
-                    layout_dialogMarkerDetails_queue.text =
-                        "Closed"
+                    layout_dialogMarkerDetails_queue.text = ctx.getString(R.string.closed)
                     layout_dialogMarkerDetails_queue.setTextColor(
                         ResourcesCompat.getColor(
                             ctx.resources,
@@ -76,10 +76,12 @@ object DialogProvider {
                         )
                     )
                 }
-                layout_dialogMarkerDetails_update.text =
-                    if (lastUpdateTime != null) "Last reported: $lastUpdateTime" else ""
+                layout_dialogMarkerDetails_update.text = if (lastUpdateTime != null) ctx.getString(
+                    R.string.last_reported,
+                    lastUpdateTime
+                ) else ""
                 if (isSubscribed) {
-                    layout_dialogMarkerDetails_button.text = "Unsubscribe"
+                    layout_dialogMarkerDetails_button.text = ctx.getString(R.string.unsubscribe)
                     layout_dialogMarkerDetails_button.background.setColorFilter(
                         ResourcesCompat.getColor(
                             ctx.resources,
@@ -98,7 +100,8 @@ object DialogProvider {
                         null
                     )
                 } else {
-                    layout_dialogMarkerDetails_button.text = "Subscribe for updates"
+                    layout_dialogMarkerDetails_button.text =
+                        ctx.getString(R.string.subscribe_for_updates)
                     layout_dialogMarkerDetails_button.background.setColorFilter(
                         ResourcesCompat.getColor(
                             ctx.resources,
@@ -127,37 +130,34 @@ object DialogProvider {
 
     fun showSubscribedDialog(ctx: Context, imgResId: Int) {
         MaterialDialog(ctx).show {
-            title(text = "Subscribed")
+            title(text = ctx.getString(R.string.subscribed))
             icon(imgResId)
-            message(text = "You're subscribed for the updates. We'll notify you once the queue waiting time become less than 15 min.")
-            positiveButton(text = "OK")
+            message(text = ctx.getString(R.string.subscribed_details))
+            positiveButton(text = ctx.getString(android.R.string.ok))
         }
     }
 
     fun showUnsubscribedDialog(ctx: Context, name: String, imgResId: Int) {
         MaterialDialog(ctx).show {
-            title(text = "Unsubscribed")
+            title(text = ctx.getString(R.string.unsubscribed))
             icon(imgResId)
-            message(text = "You will not longer receive the updates for $name")
-            positiveButton(text = "OK")
+            message(text = ctx.getString(R.string.no_updates, name))
+            positiveButton(text = ctx.getString(android.R.string.ok))
         }
     }
 
     fun showPermissionRequiredDialog(ctx: Context) {
         MaterialDialog(ctx).show {
-            title(text = "Permission required")
-            message(
-                text = "The app requires location permission to find closest shops. " +
-                        "Click \"Enable\" to open an application settings screen and grant permissions."
-            )
+            title(text = ctx.getString(R.string.permission_required))
+            message(text = ctx.getString(R.string.requires_location_permission_details))
             cancelable(false)
-            positiveButton(text = "Enable") {
+            positiveButton(text = ctx.getString(R.string.enable)) {
                 (ctx as Activity).startActivityForResult(Intent().apply {
                     action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
                     data = Uri.fromParts("package", ctx.packageName, null)
                 }, 1)
             }
-            negativeButton(text = "Exit") {
+            negativeButton(text = ctx.getString(R.string.exit)) {
                 (ctx as Activity).finishAndRemoveTask()
             }
         }

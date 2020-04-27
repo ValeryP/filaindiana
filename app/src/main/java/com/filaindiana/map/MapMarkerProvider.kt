@@ -1,21 +1,14 @@
 package com.filaindiana.map
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Bitmap
-import android.graphics.Canvas
-import android.graphics.Rect
 import android.os.Build
-import android.os.Handler
-import android.os.Looper
-import android.util.DisplayMetrics
 import android.view.LayoutInflater
-import android.view.PixelCopy
-import android.view.PixelCopy.SUCCESS
 import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewTreeObserver
-import androidx.annotation.RequiresApi
 import coil.api.load
 import com.filaindiana.R
 import com.filaindiana.network.ShopsResponse
@@ -34,6 +27,7 @@ import kotlin.coroutines.suspendCoroutine
  * Created on 22.04.2020
  */
 class MapMarkerProvider(private val activity: MapsActivity) {
+    @SuppressLint("InflateParams")
     suspend fun buildMarkerViewAsync(
         shop: ShopsResponse.Shop,
         isSubscriptionEnabled: Boolean
@@ -47,11 +41,11 @@ class MapMarkerProvider(private val activity: MapsActivity) {
                 if (shop.shopShopState == null || !shop.shopData.isOpen) {
                     this.view_text_bg.setBackgroundResource(R.drawable.bg_rounded_grey)
                     this.view_text_number.text = ""
-                    this.view_text_min.text = "Closed"
+                    this.view_text_min.text = activity.getString(R.string.closed)
                 } else {
                     this.view_text_bg.setBackgroundResource(shop.shopShopState.getStatusColor())
                     this.view_text_min.text =
-                        if (shop.shopShopState.queueWaitMinutes >= 0) "min" else ""
+                        if (shop.shopShopState.queueWaitMinutes >= 0) activity.getString(R.string.min) else ""
                     this.view_text_number.text = shop.shopShopState.queueWaitMinutes.toString()
                     this.view_text_bg.alpha = shop.shopShopState.getUpdateFreshness()
                 }

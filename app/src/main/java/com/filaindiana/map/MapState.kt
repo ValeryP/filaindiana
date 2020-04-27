@@ -32,9 +32,7 @@ class MapState {
         this.shopsFiltered.value = shopsFiltered()
     }
 
-    fun shopsAll(): List<Shop> {
-        return allShops
-    }
+    fun shopsAll(): List<Shop> = allShops
 
     fun toogleOpened() {
         val isOnlyOpenedNew = !this.filters.value!!.isOnlyOpened

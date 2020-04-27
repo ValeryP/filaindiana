@@ -42,10 +42,10 @@ object NotificationBuilder {
             PendingIntent.getBroadcast(con, 0, unsubscribeIntent, FLAG_UPDATE_CURRENT)
         val pendingIntentOpenApp: PendingIntent =
             PendingIntent.getActivity(con, 0, activityIntent, FLAG_UPDATE_CURRENT)
-        val content = "${subscriptions.size} shops have a queue < 15 min"
+        val content = con.getString(R.string.queue_details, subscriptions.size.toString())
         val subscriptionShops =
             subscriptions.joinToString(", ") { "${it.shopName} (${it.shopAddress})" }
-        val contentBig = "$subscriptionShops have a queue < 15 min"
+        val contentBig = con.getString(R.string.queue_details, subscriptionShops)
         val largeIcon = ResourcesCompat.getDrawable(
             con.resources,
             GraphicsProvider.getShopImgResId(subscriptions.first().shopBrand),
@@ -54,13 +54,13 @@ object NotificationBuilder {
         val builder = NotificationCompat.Builder(con, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_notifications_active_black_24dp)
             .setLargeIcon(largeIcon)
-            .setContentTitle("Time to shop!")
+            .setContentTitle(con.getString(R.string.time_to_shop))
             .setContentText(content)
             .setStyle(NotificationCompat.BigTextStyle().bigText(contentBig))
             .setAutoCancel(true)
             .addAction(
                 R.drawable.ic_notifications_off_black_24dp,
-                "Unsubscribe all",
+                con.getString(R.string.unsibscribe_all),
                 pendingIntentUnsubscribeIntent
             )
             .setContentIntent(pendingIntentOpenApp)
@@ -74,7 +74,7 @@ object NotificationBuilder {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val importance = NotificationManager.IMPORTANCE_DEFAULT
             val channel = NotificationChannel(CHANNEL_ID, CHANNEL_ID, importance).apply {
-                description = "Notification when the supermarket has a queue < 15 min"
+                description = con.getString(R.string.notification_channel_description)
             }
             val notificationManager: NotificationManager =
                 con.getSystemService(NOTIFICATION_SERVICE) as NotificationManager

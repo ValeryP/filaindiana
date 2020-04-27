@@ -4,7 +4,7 @@ import androidx.core.content.res.ResourcesCompat
 import com.filaindiana.R
 import com.filaindiana.map.MapsActivity
 import com.wooplr.spotlight.SpotlightConfig
-import com.wooplr.spotlight.utils.SpotlightSequence
+import com.wooplr.spotlight.SpotlightView
 import kotlinx.android.synthetic.main.activity_maps.*
 
 
@@ -14,21 +14,26 @@ import kotlinx.android.synthetic.main.activity_maps.*
  * Created on 26.04.2020
  */
 object OnboardingManager {
-    fun startOnboarding(a: MapsActivity) {
-        SpotlightSequence.getInstance(a, config(a))
-            .addSpotlight(
-                a.layout_hide_closed_container,
-                "Opened only",
-                "Show only supermarkets which are currently opened",
-                "17"
-            )
-            .addSpotlight(
-                a.layout_show_subscribed,
-                "Show subscriptions",
-                "Show only supermarkets which you are currently subscribed for updates",
-                "18"
-            )
-            .startSequence()
+    fun startOnlyClosedOnboarding(a: MapsActivity) {
+        val onlyOpened = a.getString(R.string.only_opened)
+        SpotlightView.Builder(a)
+            .setConfiguration(config(a))
+            .target(a.layout_hide_closed_container)
+            .headingTvText(onlyOpened)
+            .subHeadingTvText(a.getString(R.string.only_shops_currently_opened))
+            .usageId(onlyOpened)
+            .show()
+    }
+
+    fun startOnlySubscribtionOnboarding(a: MapsActivity) {
+        val onlySubscribed = a.getString(R.string.show_subscriptions)
+        SpotlightView.Builder(a)
+            .setConfiguration(config(a))
+            .target(a.layout_show_subscribed)
+            .headingTvText(onlySubscribed)
+            .subHeadingTvText(a.getString(R.string.only_shops_currently_subscribed))
+            .usageId(onlySubscribed)
+            .show()
     }
 
     private fun config(a: MapsActivity): SpotlightConfig = SpotlightConfig().apply {
