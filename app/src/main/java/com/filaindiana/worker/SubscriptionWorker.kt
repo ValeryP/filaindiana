@@ -25,7 +25,6 @@ class NotificationWorker(appContext: Context, workerParams: WorkerParameters) :
     CoroutineWorker(appContext, workerParams) {
     private val subscriptionsDao = AppDB.getDatabase(appContext).subscriptionDao()
     private val repo = SubscriptionRepository.getInstance(subscriptionsDao)
-    private val client = RestClient.build()
 
     companion object {
         fun enqueue(context: Context) {
@@ -44,7 +43,7 @@ class NotificationWorker(appContext: Context, workerParams: WorkerParameters) :
     override suspend fun doWork(): Result {
         return try {
             val subscriptions = repo.getSubscriptionsSync()
-            val shops = subscriptions.map { client.getShops(it.lat, it.lng) }.flatten()
+            val shops = subscriptions.map { RestClient.getShops(it.lat, it.lng) }.flatten()
             val triggeredSubscription = subscriptions.filter { s ->
                 val shop = shops.firstOrNull { it.shopData.marketId == s.shopId }
                 shop != null && shop.shopData.isOpen && (shop.shopShopState?.queueWaitMinutes ?: Int.MAX_VALUE) < 15

@@ -2,6 +2,7 @@ package com.filaindiana.utils
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.Bitmap.Config.ARGB_8888
 import android.graphics.Canvas
 import android.graphics.Rect
 import android.graphics.drawable.Drawable
@@ -42,11 +43,7 @@ object GraphicsProvider {
             val displayMetrics = DisplayMetrics()
             activity.windowManager.defaultDisplay.getMetrics(displayMetrics)
             view.measure(displayMetrics.widthPixels, displayMetrics.heightPixels)
-            val bitmap = Bitmap.createBitmap(
-                view.measuredWidth,
-                view.measuredHeight,
-                Bitmap.Config.ARGB_8888
-            )
+            val bitmap = Bitmap.createBitmap(view.measuredWidth, view.measuredHeight, ARGB_8888)
             val location = IntArray(2)
             view.getLocationInWindow(location)
             val rect = Rect(
@@ -74,11 +71,7 @@ object GraphicsProvider {
         view.layout(0, 0, view.measuredWidth, view.measuredHeight)
         @Suppress("DEPRECATION")
         view.buildDrawingCache()
-        val bitmap = Bitmap.createBitmap(
-            view.measuredWidth,
-            view.measuredHeight,
-            Bitmap.Config.ARGB_8888
-        )
+        val bitmap = Bitmap.createBitmap(view.measuredWidth, view.measuredHeight, ARGB_8888)
         val canvas = Canvas(bitmap)
         view.draw(canvas)
         return bitmap

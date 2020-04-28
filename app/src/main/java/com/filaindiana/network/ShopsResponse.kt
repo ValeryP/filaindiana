@@ -20,6 +20,8 @@ class ShopsResponse : ArrayList<ShopsResponse.Shop>() {
         @SerializedName("supermarket")
         val shopData: ShopData
     ) {
+        fun isReportingRequired() = shopShopState == null
+
         data class ShopState(
             @SerializedName("data_source")
             val dataSource: String,

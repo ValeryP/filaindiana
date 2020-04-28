@@ -1,6 +1,7 @@
 package com.filaindiana.utils
 
 import com.pixplicity.easyprefs.library.Prefs
+import kotlin.random.Random
 
 /*
  * @author Valeriy Palamarchuk
@@ -13,6 +14,22 @@ object PrefsUtils {
     private const val isOnboardingShownOpenedFilter = "IS_ONBOARDING_SHOWN_OPENED_FILTER"
     private const val isSubsctiptionFilter = "IS_SUBSCTIPTION_FILTER"
     private const val isOpenedFilter = "IS_OPENED_FILTER"
+    private const val userId = "USER_ID"
+
+    fun generateUserId() {
+        val template = "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx"
+        val numbers = (0..9).map { it.toString() }
+        val chars = 'a'..'e'
+        val id = template.map {
+            when (it) {
+                'x', 'y' -> if (Random.nextBoolean()) numbers.random() else chars.random()
+                else -> it
+            }
+        }.joinToString("")
+        Prefs.putString(userId, id)
+    }
+
+    fun getUserId() = Prefs.getString(userId, null)
 
     fun isSubsctiptionFilter() = Prefs.getBoolean(isSubsctiptionFilter, false)
     fun setSubsctiptionFilter(value: Boolean) = Prefs.putBoolean(isSubsctiptionFilter, value)

@@ -157,8 +157,7 @@ class MapHelper(private val activity: MapsActivity, val mMap: GoogleMap) :
         if (state.closestLocationDistance(mapLocation) > 500) {
             mapJobs.forEach { it.cancel() }
             mapJobs.add(CoroutineScope(Main).launch {
-                val restClient = RestClient.build()
-                val shops = restClient.getShops(mapLocation.latitude, mapLocation.longitude)
+                val shops = RestClient.getShops(mapLocation.latitude, mapLocation.longitude)
                 state.addNewFetchedLocation(mapLocation, shops)
             })
         }
