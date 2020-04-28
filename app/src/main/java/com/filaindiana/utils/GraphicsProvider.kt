@@ -103,7 +103,7 @@ object GraphicsProvider {
             "iperal" -> R.drawable.iperal
             "lidl" -> R.drawable.lidl
             "md" -> R.drawable.md
-            "naturasì" -> R.drawable.naturasi
+            "naturasì" -> R.drawable.naturasi
             "pam" -> R.drawable.pam
             "penny" -> R.drawable.penny
             "simply" -> R.drawable.simply
