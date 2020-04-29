@@ -5,6 +5,7 @@ package com.filaindiana
 import android.app.Application
 import coil.ImageLoader
 import coil.util.CoilUtils
+import com.filaindiana.utils.PrefsUtils
 import com.pixplicity.easyprefs.library.Prefs
 import net.danlew.android.joda.JodaTimeAndroid
 import okhttp3.OkHttpClient
@@ -33,5 +34,6 @@ class App : Application() {
             .setPrefsName(packageName)
             .setUseDefaultSharedPreference(true)
             .build()
+        if (PrefsUtils.getUserId() == null) PrefsUtils.generateUserId()
     }
 }

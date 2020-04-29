@@ -106,7 +106,7 @@ class ShopsResponse : ArrayList<ShopsResponse.Shop>() {
             val updatedAt: String
         ) {
             @Suppress("NestedLambdaShadowedImplicitParameter")
-            fun getOpeningHours() = openingHours.split("[[")
+            fun getOpeningHoursFormatted() = openingHours.split("[[")
                 .map { it.replace(Regex("[\\[\\]\'\"]"), "") }
                 .filter { it.length > 4 }
                 .map {
@@ -127,7 +127,13 @@ class ShopsResponse : ArrayList<ShopsResponse.Shop>() {
                         }
                         result
                     } else it
-                }[DateTime.now().dayOfWeek - 1]
+                }[DateTime.now().dayOfWeek - 1].let {
+                if (it.size == 2) {
+                    "${it[0]} - ${it[1]}"
+                } else {
+                    "${it[0]} - ${it[1]}, ${it[2]} - ${it[3]}"
+                }
+            }
 
             fun getLocation(): LatLng = LatLng(lat.toDouble(), long.toDouble())
 

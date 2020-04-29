@@ -89,18 +89,37 @@
         tools:text="Last reported: 22 Apr 06:32" />
 
     <Button
-        android:id="@+id/layout_dialogMarkerDetails_button"
-        android:layout_width="wrap_content"
+        android:id="@+id/layout_dialogMarkerDetails_button_report"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
         android:layout_marginTop="16dp"
-        android:backgroundTint="@color/colorAccent"
+        android:layout_marginEnd="32dp"
+        android:backgroundTint="@color/colorPrimary"
         android:minWidth="150dp"
         android:paddingStart="32dp"
         android:paddingEnd="32dp"
-        android:text="Subscribe for updates"
+        android:text="@string/im_in_the_queue_now"
         android:textColor="@color/colorTextWhite"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/layout_dialogMarkerDetails_update" />
+
+    <Button
+        android:id="@+id/layout_dialogMarkerDetails_button_subscribe"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="32dp"
+        android:backgroundTint="@color/colorAccent"
+        android:minWidth="150dp"
+        android:paddingStart="32dp"
+        android:paddingEnd="32dp"
+        android:text="@string/subscribe_for_updates"
+        android:textColor="@color/colorTextWhite"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/layout_dialogMarkerDetails_button_report" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

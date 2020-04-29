@@ -32,4 +32,9 @@
     <string name="only_shops_currently_opened">Show only supermarkets which are currently opened</string>
     <string name="show_subscriptions">Show subscriptions</string>
     <string name="only_shops_currently_subscribed">Show only supermarkets which you are currently subscribed for updates</string>
+    <string name="im_in_the_queue_now">I\'m in the queue now</string>
+    <string name="send_report">Send report</string>
+    <string name="how_many_people_are_there_in_the_queue">How many people are there in the queue?</string>
+    <string name="how_long_do_you_think_the_queue_will_last">How long do you think the queue will last?</string>
+    <string name="report_sent">Your report has been sent and will be processed as soon as possible!</string>
 </resources>

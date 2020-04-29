@@ -226,24 +226,7 @@ class MapHelper(private val activity: MapsActivity, val mMap: GoogleMap) :
                 CoroutineScope(IO).launch {
                     val subscription = repo.getSubscriptionSync(shop.shopData.marketId)
                     CoroutineScope(Main).launch {
-                        DialogProvider.showMarkerDetails(
-                            activity,
-                            shop.shopData.getImgResId(),
-                            name,
-                            address,
-                            shop.shopData.getOpeningHours().let {
-                                if (it.size == 2) {
-                                    "${it[0]} - ${it[1]}"
-                                } else {
-                                    "${it[0]} - ${it[1]}, ${it[2]} - ${it[3]}"
-                                }
-                            },
-                            shop.shopShopState?.queueSizePeople ?: 0,
-                            shop.shopShopState?.queueWaitMinutes ?: 0,
-                            shop.shopShopState?.getLastUpdate(),
-                            shop.shopData.isOpen,
-                            subscription != null
-                        ) {
+                        DialogProvider.showMarkerDetails(activity, shop, subscription != null) {
                             CoroutineScope(Main).launch {
                                 if (subscription == null) {
                                     repo.saveSubscription(

@@ -1,5 +1,6 @@
 package com.filaindiana.network
 
+import com.filaindiana.utils.PrefsUtils
 import com.google.android.gms.maps.model.LatLng
 import okhttp3.MediaType
 import okhttp3.RequestBody
@@ -39,12 +40,12 @@ class RestClient {
         suspend fun report(
             userLocation: LatLng,
             shopId: String,
-            userId: String,
             queueSize: Int,
-            queueWaitingTime: Int
+            queueTime: Int
         ): ShopsResponse {
+            val userId = PrefsUtils.getUserId()
             val data =
-                "{\"market_id\":$shopId,\"user_id\":$userId,\"lat\":${userLocation.latitude},\"long\":${userLocation.longitude},\"queue_size\":$queueSize,\"queue_wait_minutes\":$queueWaitingTime}"
+                "{\"market_id\":$shopId,\"user_id\":$userId,\"lat\":${userLocation.latitude},\"long\":${userLocation.longitude},\"queue_size\":$queueSize,\"queue_wait_minutes\":$queueTime}"
             val body = RequestBody.create(MediaType.parse("application/octet-stream"), data)
             val url = "https://gxlae9f8tk.execute-api.eu-central-1.amazonaws.com/"
             return Retrofit.Builder().baseUrl(url)
