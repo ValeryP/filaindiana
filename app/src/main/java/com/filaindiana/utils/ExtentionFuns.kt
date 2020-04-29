@@ -1,5 +1,6 @@
 package com.filaindiana.utils
 
+import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.Bitmap.Config.ARGB_8888
 import android.graphics.Canvas
@@ -18,6 +19,17 @@ import kotlin.math.max
  * Created on 25.04.2020
  */
 fun <T : Any?> MutableLiveData<T>.default(initialValue: T) = apply { setValue(initialValue) }
+
+val Int.pxToDp: Int
+    get() = (this / Resources.getSystem().displayMetrics.density).toInt()
+val Int.pxToSp: Int
+    get() = (this / Resources.getSystem().displayMetrics.scaledDensity).toInt()
+val Int.dpToPx: Int
+    get() = (this * Resources.getSystem().displayMetrics.density).toInt()
+val Int.dpToSp: Int
+    get() = (this.dpToPx / Resources.getSystem().displayMetrics.scaledDensity).toInt()
+val Int.spToPx: Int
+    get() = (this * Resources.getSystem().displayMetrics.scaledDensity).toInt()
 
 fun List<ShopsResponse.Shop>.filterOpen(): List<ShopsResponse.Shop> {
     return this.filter { it.shopShopState != null && it.shopData.isOpen }

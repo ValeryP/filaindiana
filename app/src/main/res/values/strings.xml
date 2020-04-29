@@ -9,6 +9,7 @@
     <string name="looking_for_location">Looking for your location…</string>
     <string name="location_found">Location successfully found!</string>
     <string name="closed">Closed</string>
+    <string name="report">Report</string>
     <string name="min">min</string>
     <string name="app_requires_location_permission">The app requires location permission</string>
     <string name="permission_required">Permission required</string>
@@ -36,5 +37,6 @@
     <string name="send_report">Send report</string>
     <string name="how_many_people_are_there_in_the_queue">How many people are there in the queue?</string>
     <string name="how_long_do_you_think_the_queue_will_last">How long do you think the queue will last?</string>
-    <string name="report_sent">Your report has been sent and will be processed as soon as possible!</string>
+    <string name="report_sent">Your report has been sent and will be processed as soon as possible! ❤️</string>
+    <string name="report_required">We don\'t know how many people are in a queue right now.\n\nIf you\'re in the queue, please send us a report 😘</string>
 </resources>

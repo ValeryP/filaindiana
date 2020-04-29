@@ -1,7 +1,9 @@
 package com.filaindiana.network
 
+import android.util.Log
 import com.filaindiana.utils.PrefsUtils
 import com.google.android.gms.maps.model.LatLng
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import okhttp3.MediaType
 import okhttp3.RequestBody
 import retrofit2.Retrofit
@@ -24,7 +26,7 @@ class RestClient {
 
         interface ReportApiService {
             @POST("prod/reportsPostV3")
-            suspend fun report(@Body bytes: RequestBody): ShopsResponse
+            suspend fun report(@Body bytes: RequestBody): String
         }
 
         suspend fun getShops(lat: Double, lng: Double): ShopsResponse {
@@ -42,16 +44,22 @@ class RestClient {
             shopId: String,
             queueSize: Int,
             queueTime: Int
-        ): ShopsResponse {
-            val userId = PrefsUtils.getUserId()
-            val data =
-                "{\"market_id\":$shopId,\"user_id\":$userId,\"lat\":${userLocation.latitude},\"long\":${userLocation.longitude},\"queue_size\":$queueSize,\"queue_wait_minutes\":$queueTime}"
-            val body = RequestBody.create(MediaType.parse("application/octet-stream"), data)
-            val url = "https://gxlae9f8tk.execute-api.eu-central-1.amazonaws.com/"
-            return Retrofit.Builder().baseUrl(url)
-                .addConverterFactory(GsonConverterFactory.create()).build()
-                .create(ReportApiService::class.java)
-                .report(body)
+        ) {
+            try {
+                val userId = PrefsUtils.getUserId()
+                val data =
+                    "{\"market_id\":\"$shopId\",\"user_id\":\"$userId\",\"lat\":${userLocation.latitude},\"long\":${userLocation.longitude},\"queue_size\":$queueSize,\"queue_wait_minutes\":$queueTime}"
+                val body = RequestBody.create(MediaType.parse("application/octet-stream"), data)
+                val url = "https://gxlae9f8tk.execute-api.eu-central-1.amazonaws.com/"
+                FirebaseCrashlytics.getInstance().log("Data: \"$data\"")
+                Retrofit.Builder().baseUrl(url)
+                    .addConverterFactory(GsonConverterFactory.create()).build()
+                    .create(ReportApiService::class.java)
+                    .report(body)
+            } catch (e: Exception) {
+                Log.e("xxx", e.toString(), e)
+                FirebaseCrashlytics.getInstance().recordException(e)
+            }
         }
     }
 }

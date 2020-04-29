@@ -38,7 +38,11 @@ class MapMarkerProvider(private val activity: MapsActivity) {
             val marker: View = layoutInflater.inflate(R.layout.view_marker, null).apply {
                 this.view_img.load(shop.shopData.getImgResId())
                 this.view_subscription.visibility = if (isSubscriptionEnabled) VISIBLE else GONE
-                if (shop.shopShopState == null || !shop.shopData.isOpen) {
+                if (shop.isReportingRequired()) {
+                    this.view_text_bg.setBackgroundResource(R.drawable.bg_rounded_blue)
+                    this.view_text_number.text = ""
+                    this.view_text_min.text = activity.getString(R.string.report)
+                } else if (shop.shopShopState == null || !shop.shopData.isOpen) {
                     this.view_text_bg.setBackgroundResource(R.drawable.bg_rounded_grey)
                     this.view_text_number.text = ""
                     this.view_text_min.text = activity.getString(R.string.closed)

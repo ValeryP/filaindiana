@@ -6,6 +6,8 @@ import android.app.Application
 import coil.ImageLoader
 import coil.util.CoilUtils
 import com.filaindiana.utils.PrefsUtils
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.pixplicity.easyprefs.library.Prefs
 import net.danlew.android.joda.JodaTimeAndroid
 import okhttp3.OkHttpClient
@@ -35,5 +37,7 @@ class App : Application() {
             .setUseDefaultSharedPreference(true)
             .build()
         if (PrefsUtils.getUserId() == null) PrefsUtils.generateUserId()
+        FirebaseAnalytics.getInstance(this).setUserId(PrefsUtils.getUserId())
+        FirebaseCrashlytics.getInstance().setUserId(PrefsUtils.getUserId())
     }
 }

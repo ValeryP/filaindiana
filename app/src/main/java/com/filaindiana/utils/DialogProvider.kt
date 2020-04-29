@@ -6,8 +6,10 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.PorterDuff.Mode.MULTIPLY
 import android.net.Uri
-import android.provider.Settings
+import android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS
+import android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS
 import android.util.Log
+import android.view.View.GONE
 import android.widget.Toast.LENGTH_LONG
 import androidx.core.content.res.ResourcesCompat
 import com.afollestad.materialdialogs.MaterialDialog
@@ -40,10 +42,7 @@ object DialogProvider {
             message(text = ctx.getString(R.string.enable_gps))
             cancelable(false)
             positiveButton(text = ctx.getString(R.string.enable)) {
-                (ctx as Activity).startActivityForResult(
-                    Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS),
-                    1
-                )
+                (ctx as Activity).startActivityForResult(Intent(ACTION_LOCATION_SOURCE_SETTINGS), 1)
             }
             negativeButton(text = ctx.getString(R.string.exit)) {
                 (ctx as Activity).finishAndRemoveTask()
@@ -69,7 +68,11 @@ object DialogProvider {
                     "${shop.shopData.address}, ${shop.shopData.city}"
                 layout_dialogMarkerDetails_openHours.text =
                     ctx.getString(R.string.open_hours, openHours)
-                if (shop.shopData.isOpen) {
+                if (shop.isReportingRequired()) {
+                    layout_dialogMarkerDetails_queue.text =
+                        context.getString(R.string.report_required)
+                    layout_dialogMarkerDetails_queue.textSize = 20F
+                } else if (shop.shopData.isOpen) {
                     layout_dialogMarkerDetails_queue.text =
                         ctx.getString(R.string.queue, queueSizePeople, queueWaitMinutes)
                     layout_dialogMarkerDetails_queue.setTextColor(
@@ -90,10 +93,12 @@ object DialogProvider {
                     )
                 }
                 val lastUpdate = shop.shopShopState?.getLastUpdate()
-                layout_dialogMarkerDetails_update.text = if (lastUpdate != null) ctx.getString(
-                    R.string.last_reported,
-                    lastUpdate
-                ) else ""
+                if (lastUpdate == null) {
+                    layout_dialogMarkerDetails_update.visibility = GONE
+                } else {
+                    layout_dialogMarkerDetails_update.text =
+                        ctx.getString(R.string.last_reported, lastUpdate)
+                }
                 if (isSubscribed) {
                     layout_dialogMarkerDetails_button_subscribe.text =
                         ctx.getString(R.string.unsubscribe)
@@ -224,7 +229,7 @@ object DialogProvider {
             cancelable(false)
             positiveButton(text = ctx.getString(R.string.enable)) {
                 (ctx as Activity).startActivityForResult(Intent().apply {
-                    action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
+                    action = ACTION_APPLICATION_DETAILS_SETTINGS
                     data = Uri.fromParts("package", ctx.packageName, null)
                 }, 1)
             }
