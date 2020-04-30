@@ -19,6 +19,8 @@
     <string name="open_hours">Open: %1$s</string>
     <string name="last_reported">Last reported: %1$s</string>
     <string name="queue">%1$d pers / %2$d min</string>
+    <string name="n_people">%1$s people</string>
+    <string name="n_min">%1$s min</string>
     <string name="queue_details">%1$s shops have a queue less than 15 min</string>
     <string name="unsubscribe">Unsubscribe</string>
     <string name="subscribe_for_updates">Subscribe for updates</string>
