@@ -3,10 +3,6 @@ package com.filaindiana.map
 import android.Manifest.permission.ACCESS_COARSE_LOCATION
 import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.annotation.SuppressLint
-import android.os.Bundle
-import android.util.Log
-import android.view.View.GONE
-import android.view.View.VISIBLE
 import android.widget.Toast.LENGTH_LONG
 import androidx.core.content.res.ResourcesCompat
 import androidx.lifecycle.Observer
@@ -16,18 +12,13 @@ import com.filaindiana.data.Subscription
 import com.filaindiana.data.SubscriptionRepository
 import com.filaindiana.network.RestClient
 import com.filaindiana.network.ShopsResponse.Shop
-import com.filaindiana.utils.DialogProvider
-import com.filaindiana.utils.OnboardingManager
-import com.filaindiana.utils.PrefsUtils
-import com.filaindiana.utils.filterSubscribed
+import com.filaindiana.utils.*
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
-import com.google.firebase.analytics.FirebaseAnalytics.Event.GENERATE_LEAD
-import com.google.firebase.analytics.FirebaseAnalytics.Param.ITEM_NAME
 import es.dmoral.toasty.Toasty
 import io.nlopez.smartlocation.SmartLocation
 import io.nlopez.smartlocation.location.config.LocationParams
@@ -93,9 +84,9 @@ class MapHelper(private val activity: MapsActivity, val mMap: GoogleMap) :
                 val isSubscribtionsVisible = points.filterSubscribed(subscriptions).isNotEmpty()
                 if (isSubscribtionsVisible) {
                     OnboardingManager.startOnlySubscribtionOnboarding(activity)
-                    activity.layout_show_subscribed.visibility = VISIBLE
+                    activity.layout_show_subscribed.show()
                 } else {
-                    activity.layout_show_subscribed.visibility = GONE
+                    activity.layout_show_subscribed.hide()
                 }
                 defreezeMap()
             }
@@ -139,7 +130,7 @@ class MapHelper(private val activity: MapsActivity, val mMap: GoogleMap) :
     }
 
     fun startLocationSearch(callback: ((location: LatLng) -> Unit)? = null) {
-        Log.v("xxx", "SmartLocation.with()")
+        logDebug { "SmartLocation.with()" }
         val isGpsEnabled = SmartLocation.with(activity).location().state().isGpsAvailable
         if (isGpsEnabled) {
             launchSmartLocator(callback)
@@ -148,13 +139,21 @@ class MapHelper(private val activity: MapsActivity, val mMap: GoogleMap) :
         }
     }
 
-    fun onShowOpenedClick() = state.toogleOpened()
+    fun onShowOpenedClick() {
+        Firebase.analytics(activity).logClickShowOpenedOnly()
+        state.toogleOpened()
+    }
 
-    fun onShowSubscribedClick() = state.toogleSubscribed()
+    fun onShowSubscribedClick() {
+        Firebase.analytics(activity).logClickShowSubscribedOnly()
+        state.toogleSubscribed()
+    }
 
     private fun tryToFetchNewShops() {
         val mapLocation = mMap.cameraPosition.target
+        Firebase.analytics(activity).logMapMoved(mapLocation)
         if (state.closestLocationDistance(mapLocation) > 500) {
+            Firebase.analytics(activity).logFetchingNewPoints(mapLocation)
             mapJobs.forEach { it.cancel() }
             mapJobs.add(CoroutineScope(Main).launch {
                 val shops = RestClient.getShops(mapLocation.latitude, mapLocation.longitude)
@@ -165,7 +164,7 @@ class MapHelper(private val activity: MapsActivity, val mMap: GoogleMap) :
 
     private suspend fun addShopsOnTheMap(shops: List<Shop>, subscriptions: List<Subscription>) {
         val subscribedShops = state.shopsAll().filterSubscribed(subscriptions)
-        activity.layout_footer_view.visibility = VISIBLE
+        activity.layout_footer_view.show()
         for (shop in shops) {
             val position = shop.shopData.getLocation()
             val iconBitmap = MapMarkerProvider(activity).buildMarkerViewAsync(
@@ -177,7 +176,7 @@ class MapHelper(private val activity: MapsActivity, val mMap: GoogleMap) :
             mMap.addMarker(markerOptions).apply { tag = shop.shopData.marketId }
             activity.layout_footer_view.removeAllViews()
         }
-        activity.layout_footer_view.visibility = GONE
+        activity.layout_footer_view.hide()
     }
 
     private fun launchSmartLocator(callback: ((location: LatLng) -> Unit)? = null) {
@@ -186,7 +185,7 @@ class MapHelper(private val activity: MapsActivity, val mMap: GoogleMap) :
         SmartLocation.with(activity).location().apply { config(LocationParams.NAVIGATION) }.oneFix()
             .start {
                 val userLocation = LatLng(it.latitude, it.longitude)
-                Log.v("xxx", "Location: $userLocation")
+                logDebug { "Location: $userLocation" }
                 callback?.invoke(userLocation)
             }
     }
@@ -226,7 +225,7 @@ class MapHelper(private val activity: MapsActivity, val mMap: GoogleMap) :
                 CoroutineScope(IO).launch {
                     val subscription = repo.getSubscriptionSync(shop.shopData.marketId)
                     CoroutineScope(Main).launch {
-                        DialogProvider.showMarkerDetails(activity, shop, subscription != null) {
+                        DialogProvider.showShopDetails(activity, shop, subscription != null) {
                             CoroutineScope(Main).launch {
                                 if (subscription == null) {
                                     repo.saveSubscription(
@@ -237,15 +236,12 @@ class MapHelper(private val activity: MapsActivity, val mMap: GoogleMap) :
                                         state.getShopClusterLocation(shop).latitude,
                                         state.getShopClusterLocation(shop).longitude
                                     )
+                                    Firebase.analytics(activity).logSavedSubscription(shop)
                                     DialogProvider.showSubscribedDialog(
                                         activity,
                                         shop.shopData.getImgResId()
                                     )
-                                    activity.fa.logEvent(
-                                        GENERATE_LEAD,
-                                        Bundle().apply {
-                                            this.putString(ITEM_NAME, shop.shopData.brand)
-                                        })
+                                    Firebase.analytics(activity).logShowYouAreSubcribedDialog(shop)
                                 } else {
                                     repo.deleteSubscription(subscription.shopId)
                                     DialogProvider.showUnsubscribedDialog(
@@ -253,6 +249,7 @@ class MapHelper(private val activity: MapsActivity, val mMap: GoogleMap) :
                                         name,
                                         shop.shopData.getImgResId()
                                     )
+                                    Firebase.analytics(activity).logShowYouAreUnsubcribedDialog(shop)
                                 }
                             }
                         }

@@ -8,8 +8,6 @@ import android.graphics.PorterDuff.Mode.MULTIPLY
 import android.net.Uri
 import android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS
 import android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS
-import android.util.Log
-import android.view.View.GONE
 import android.widget.Toast.LENGTH_LONG
 import androidx.core.content.res.ResourcesCompat
 import com.afollestad.materialdialogs.MaterialDialog
@@ -37,6 +35,7 @@ import kotlinx.coroutines.launch
  */
 object DialogProvider {
     fun showGpsRequiredDialog(ctx: Context) {
+        Firebase.analytics(ctx).logShowGpsRequiredDialog()
         MaterialDialog(ctx).show {
             title(text = ctx.getString(R.string.permission_required))
             message(text = ctx.getString(R.string.enable_gps))
@@ -51,7 +50,7 @@ object DialogProvider {
     }
 
     @SuppressLint("SetTextI18n")
-    fun showMarkerDetails(
+    fun showShopDetails(
         ctx: Context,
         shop: Shop,
         isSubscribed: Boolean,
@@ -60,6 +59,7 @@ object DialogProvider {
         val openHours = shop.shopData.getOpeningHoursFormatted()
         val queueSizePeople = shop.shopShopState?.queueSizePeople ?: 0
         val queueWaitMinutes = shop.shopShopState?.queueWaitMinutes ?: 0
+        Firebase.analytics(ctx).logShowShopDetailsDialog(shop, isSubscribed)
         MaterialDialog(ctx).show { customView(R.layout.dialog_marker_details) }.let { dialog ->
             dialog.getCustomView().apply {
                 layout_dialogMarkerDetails_img.setImageResource(shop.shopData.getImgResId())
@@ -68,33 +68,37 @@ object DialogProvider {
                     "${shop.shopData.address}, ${shop.shopData.city}"
                 layout_dialogMarkerDetails_openHours.text =
                     ctx.getString(R.string.open_hours, openHours)
-                if (shop.isReportingRequired()) {
-                    layout_dialogMarkerDetails_queue.text =
-                        context.getString(R.string.report_required)
-                    layout_dialogMarkerDetails_queue.textSize = 20F
-                } else if (shop.shopData.isOpen) {
-                    layout_dialogMarkerDetails_queue.text =
-                        ctx.getString(R.string.queue, queueSizePeople, queueWaitMinutes)
-                    layout_dialogMarkerDetails_queue.setTextColor(
-                        ResourcesCompat.getColor(
-                            ctx.resources,
-                            R.color.colorMarkerGreen,
-                            null
+                when {
+                    shop.isReportingRequired() -> {
+                        layout_dialogMarkerDetails_queue.text =
+                            context.getString(R.string.report_required)
+                        layout_dialogMarkerDetails_queue.textSize = 20F
+                    }
+                    shop.shopData.isOpen -> {
+                        layout_dialogMarkerDetails_queue.text =
+                            ctx.getString(R.string.queue, queueSizePeople, queueWaitMinutes)
+                        layout_dialogMarkerDetails_queue.setTextColor(
+                            ResourcesCompat.getColor(
+                                ctx.resources,
+                                R.color.colorMarkerGreen,
+                                null
+                            )
                         )
-                    )
-                } else {
-                    layout_dialogMarkerDetails_queue.text = ctx.getString(R.string.closed)
-                    layout_dialogMarkerDetails_queue.setTextColor(
-                        ResourcesCompat.getColor(
-                            ctx.resources,
-                            R.color.colorTextDark,
-                            null
+                    }
+                    else -> {
+                        layout_dialogMarkerDetails_queue.text = ctx.getString(R.string.closed)
+                        layout_dialogMarkerDetails_queue.setTextColor(
+                            ResourcesCompat.getColor(
+                                ctx.resources,
+                                R.color.colorTextDark,
+                                null
+                            )
                         )
-                    )
+                    }
                 }
                 val lastUpdate = shop.shopShopState?.getLastUpdate()
                 if (lastUpdate == null) {
-                    layout_dialogMarkerDetails_update.visibility = GONE
+                    layout_dialogMarkerDetails_update.hide()
                 } else {
                     layout_dialogMarkerDetails_update.text =
                         ctx.getString(R.string.last_reported, lastUpdate)
@@ -154,6 +158,7 @@ object DialogProvider {
 
     @SuppressLint("SetTextI18n")
     private fun showReportDialog(context: Context, shop: Shop) {
+        Firebase.analytics(context).logShowReportDialog(shop)
         MaterialDialog(context).show { customView(R.layout.dialog_report) }.let { dialog ->
             dialog.getCustomView().apply {
                 layout_dialogReport_img.setImageResource(shop.shopData.getImgResId())
@@ -166,29 +171,39 @@ object DialogProvider {
                 layout_dialogReport_queueSizeSeekbar.onSeekChangeListener =
                     object : OnSeekChangeListener {
                         override fun onSeeking(seekParams: SeekParams) {
-                            Log.v("xxx", seekParams.progress.toString())
+                            logDebug { seekParams.progress.toString() }
                         }
 
                         override fun onStartTrackingTouch(seekBar: IndicatorSeekBar?) {}
-                        override fun onStopTrackingTouch(seekBar: IndicatorSeekBar?) {}
+                        override fun onStopTrackingTouch(seekBar: IndicatorSeekBar?) {
+                            seekBar?.let {
+                                Firebase.analytics(context).logSelectQueueSize(it.progress)
+                            }
+                        }
                     }
                 layout_dialogReport_queueTimeSeekbar.setIndicatorTextFormat("\${PROGRESS} min")
                 layout_dialogReport_queueTimeSeekbar.onSeekChangeListener =
                     object : OnSeekChangeListener {
                         override fun onSeeking(seekParams: SeekParams) {
-                            Log.v("xxx", seekParams.progress.toString())
+                            logDebug { seekParams.progress.toString() }
                         }
 
                         override fun onStartTrackingTouch(seekBar: IndicatorSeekBar?) {}
-                        override fun onStopTrackingTouch(seekBar: IndicatorSeekBar?) {}
+                        override fun onStopTrackingTouch(seekBar: IndicatorSeekBar?) {
+                            seekBar?.let {
+                                Firebase.analytics(context).logSelectQueueTime(it.progress)
+                            }
+                        }
                     }
                 layout_dialogReport_button_report.setOnClickListener {
-                    Log.v("xxx", "Click: layout_dialogReport_button_report")
+                    logDebug { "Click: send report" }
                     val lastLocation = SmartLocation.with(context)
                         .location().lastLocation.let { LatLng(it!!.latitude, it.longitude) }
                     val shopId = shop.shopData.marketId
                     val queueSize = layout_dialogReport_queueSizeSeekbar.progress
                     val queueTime = layout_dialogReport_queueTimeSeekbar.progress
+                    Firebase.analytics(context)
+                        .logClickSendReport(lastLocation, shopId, queueSize, queueTime)
                     CoroutineScope(IO).launch {
                         RestClient.report(lastLocation, shopId, queueSize, queueTime)
                     }
@@ -223,6 +238,7 @@ object DialogProvider {
     }
 
     fun showPermissionRequiredDialog(ctx: Context) {
+        Firebase.analytics(ctx).logShowPermissionsRationaleDialog()
         MaterialDialog(ctx).show {
             title(text = ctx.getString(R.string.permission_required))
             message(text = ctx.getString(R.string.requires_location_permission_details))

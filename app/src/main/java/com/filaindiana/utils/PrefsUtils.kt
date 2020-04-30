@@ -16,20 +16,23 @@ object PrefsUtils {
     private const val isOpenedFilter = "IS_OPENED_FILTER"
     private const val userId = "USER_ID"
 
-    fun generateUserId() {
-        val template = "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx"
-        val numbers = (0..9).map { it.toString() }
-        val chars = 'a'..'e'
-        val id = template.map {
-            when (it) {
-                'x', 'y' -> if (Random.nextBoolean()) numbers.random() else chars.random()
-                else -> it
-            }
-        }.joinToString("")
-        Prefs.putString(userId, id)
-    }
+    fun getUserId(): String {
+        fun generateUserId() {
+            val template = "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx"
+            val numbers = (0..9).map { it.toString() }
+            val chars = 'a'..'e'
+            val id = template.map {
+                when (it) {
+                    'x', 'y' -> if (Random.nextBoolean()) numbers.random() else chars.random()
+                    else -> it
+                }
+            }.joinToString("")
+            Prefs.putString(userId, id)
+        }
 
-    fun getUserId() = Prefs.getString(userId, null)
+        if (Prefs.getString(userId, null) == null) generateUserId()
+        return Prefs.getString(userId, null)
+    }
 
     fun isSubsctiptionFilter() = Prefs.getBoolean(isSubsctiptionFilter, false)
     fun setSubsctiptionFilter(value: Boolean) = Prefs.putBoolean(isSubsctiptionFilter, value)

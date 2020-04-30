@@ -3,14 +3,15 @@
 package com.filaindiana.worker
 
 import android.content.Context
-import android.util.Log
 import androidx.work.*
 import androidx.work.ExistingPeriodicWorkPolicy.KEEP
 import androidx.work.NetworkType.CONNECTED
 import com.filaindiana.data.AppDB
 import com.filaindiana.data.SubscriptionRepository
 import com.filaindiana.network.RestClient
+import com.filaindiana.utils.Firebase
 import com.filaindiana.utils.NotificationBuilder
+import com.filaindiana.utils.logInfo
 import java.util.concurrent.TimeUnit.MINUTES
 
 /*
@@ -19,7 +20,7 @@ import java.util.concurrent.TimeUnit.MINUTES
  * Created on 25.04.2020
  */
 
-const val CHANNEL_ID = "Fila Indiana Notifications"
+const val CHANNEL_ID = "FilaIndiana Notifications"
 
 class NotificationWorker(appContext: Context, workerParams: WorkerParameters) :
     CoroutineWorker(appContext, workerParams) {
@@ -28,7 +29,7 @@ class NotificationWorker(appContext: Context, workerParams: WorkerParameters) :
 
     companion object {
         fun enqueue(context: Context) {
-            Log.v("xxx", "NotificationWorker scheduled")
+            logInfo { "NotificationWorker scheduled" }
             val constraints = Constraints.Builder()
                 .setRequiredNetworkType(CONNECTED)
                 .build()
@@ -37,6 +38,7 @@ class NotificationWorker(appContext: Context, workerParams: WorkerParameters) :
                 .build()
             val workManager = WorkManager.getInstance(context)
             workManager.enqueueUniquePeriodicWork(CHANNEL_ID, KEEP, work)
+            Firebase.analytics(context).logWorkerStarted()
         }
     }
 
@@ -46,13 +48,12 @@ class NotificationWorker(appContext: Context, workerParams: WorkerParameters) :
             val shops = subscriptions.map { RestClient.getShops(it.lat, it.lng) }.flatten()
             val triggeredSubscription = subscriptions.filter { s ->
                 val shop = shops.firstOrNull { it.shopData.marketId == s.shopId }
-                shop != null && shop.shopData.isOpen && (shop.shopShopState?.queueWaitMinutes ?: Int.MAX_VALUE) < 15
+                shop != null && shop.shopData.isOpen && (shop.shopShopState?.queueWaitMinutes
+                    ?: Int.MAX_VALUE) < 15
             }
-            Log.v(
-                "xxx",
-                "${subscriptions.size} subscription, ${shops.size} shops, ${triggeredSubscription.size} alerts"
-            )
+            logInfo { "${subscriptions.size} subscription, ${shops.size} shops, ${triggeredSubscription.size} alerts" }
             NotificationBuilder.showNotification(triggeredSubscription, applicationContext)
+            Firebase.analytics(this.applicationContext).logWorkerNotificationTriggered(triggeredSubscription)
             Result.success()
         } catch (e: Exception) {
             Result.failure()

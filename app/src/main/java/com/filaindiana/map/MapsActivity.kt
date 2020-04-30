@@ -6,19 +6,15 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import android.view.View.VISIBLE
 import androidx.appcompat.app.AppCompatActivity
 import com.filaindiana.R
-import com.filaindiana.utils.DialogProvider
+import com.filaindiana.utils.*
 import com.filaindiana.utils.NotificationBuilder.KEY_SUBSCRIPTON_LOCATION
-import com.filaindiana.utils.OnboardingManager
-import com.filaindiana.utils.PrefsUtils
 import com.filaindiana.worker.NotificationWorker
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
-import com.google.firebase.analytics.FirebaseAnalytics
 import io.nlopez.smartlocation.SmartLocation
 import kotlinx.android.synthetic.main.activity_maps.*
 import pub.devrel.easypermissions.AfterPermissionGranted
@@ -32,16 +28,14 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, EasyPermissions.Pe
     EasyPermissions.RationaleCallbacks {
 
     private lateinit var mapHelper: MapHelper
-    lateinit var fa: FirebaseAnalytics
     private var subscriptionLocation: LatLng? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         subscriptionLocation = intent?.extras?.getParcelable(KEY_SUBSCRIPTON_LOCATION)
-        Log.v("xxx", "onCreate: $subscriptionLocation")
+        logDebug { "onCreate: $subscriptionLocation" }
         setContentView(R.layout.activity_maps)
         NotificationWorker.enqueue(this)
-        fa = FirebaseAnalytics.getInstance(this)
         (supportFragmentManager.findFragmentById(R.id.layout_map) as SupportMapFragment)
             .getMapAsync(this)
     }
@@ -49,7 +43,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, EasyPermissions.Pe
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
         subscriptionLocation = intent?.extras?.getParcelable(KEY_SUBSCRIPTON_LOCATION)
-        Log.v("xxx", "onNewIntent: $subscriptionLocation")
+        logDebug { "onNewIntent: $subscriptionLocation" }
         askLocationPermissions()
     }
 
@@ -69,6 +63,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, EasyPermissions.Pe
         if (EasyPermissions.hasPermissions(this, *perms)) {
             requestLocationSearch()
         } else {
+            Firebase.analytics(this).logRequestPermissions()
             EasyPermissions.requestPermissions(
                 this,
                 getString(R.string.app_requires_location_permission),
@@ -85,7 +80,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, EasyPermissions.Pe
 
     override fun onPermissionsDenied(requestCode: Int, perms: MutableList<String>) {
         if (EasyPermissions.somePermissionPermanentlyDenied(this, perms)) {
+            Firebase.analytics(this).logPermissionsDeniedPermanently()
             DialogProvider.showPermissionRequiredDialog(this)
+        } else {
+            Firebase.analytics(this).logPermissionsDenied()
         }
     }
 
@@ -93,22 +91,27 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, EasyPermissions.Pe
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == DEFAULT_SETTINGS_REQ_CODE) {
             requestLocationSearch()
+            Firebase.analytics(this).logPermissionsAccepted()
         }
     }
 
     override fun onPermissionsGranted(requestCode: Int, perms: MutableList<String>) {
         requestLocationSearch()
-    }
-
-    override fun onRationaleDenied(requestCode: Int) {
-        DialogProvider.showPermissionRequiredDialog(this)
+        Firebase.analytics(this).logPermissionsAccepted()
     }
 
     override fun onRationaleAccepted(requestCode: Int) {
         requestLocationSearch()
+        Firebase.analytics(this).logPermissionsRationaleAccepted()
+    }
+
+    override fun onRationaleDenied(requestCode: Int) {
+        Firebase.analytics(this).logPermissionsDenied()
+        DialogProvider.showPermissionRequiredDialog(this)
     }
 
     private fun requestLocationSearch() {
+        Firebase.analytics(this).logLocationSearchStarted()
         mapHelper.startLocationSearch { userLocation ->
             val zoomLocation = subscriptionLocation ?: userLocation
             mapHelper.focusMap(zoomLocation) {
@@ -131,7 +134,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, EasyPermissions.Pe
 
     @SuppressLint("ClickableViewAccessibility")
     private fun setupClosedShopsSwitch() {
-        layout_hide_closed.visibility = VISIBLE
+        layout_hide_closed.show()
         layout_hide_closed.isChecked = PrefsUtils.isOpenedFilter()
         layout_hide_closed.setOnTouchListener { v, event ->
             v.onTouchEvent(event)

@@ -6,6 +6,7 @@ import android.graphics.Bitmap.Config.ARGB_8888
 import android.graphics.Canvas
 import android.graphics.Color.WHITE
 import android.graphics.drawable.Drawable
+import android.view.View
 import androidx.core.graphics.drawable.toBitmap
 import androidx.lifecycle.MutableLiveData
 import com.filaindiana.data.Subscription
@@ -30,6 +31,21 @@ val Int.dpToSp: Int
     get() = (this.dpToPx / Resources.getSystem().displayMetrics.scaledDensity).toInt()
 val Int.spToPx: Int
     get() = (this * Resources.getSystem().displayMetrics.scaledDensity).toInt()
+
+fun View.show() {
+    visibility = View.VISIBLE
+}
+
+fun View.hide() {
+    visibility = View.GONE
+}
+
+fun View.invisible() {
+    visibility = View.INVISIBLE
+}
+
+val View.isVisible: Boolean
+    get() = visibility == View.VISIBLE
 
 fun List<ShopsResponse.Shop>.filterOpen(): List<ShopsResponse.Shop> {
     return this.filter { it.shopShopState != null && it.shopData.isOpen }

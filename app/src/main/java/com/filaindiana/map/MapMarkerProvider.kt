@@ -6,13 +6,13 @@ import android.graphics.Bitmap
 import android.os.Build
 import android.view.LayoutInflater
 import android.view.View
-import android.view.View.GONE
-import android.view.View.VISIBLE
 import android.view.ViewTreeObserver
 import coil.api.load
 import com.filaindiana.R
 import com.filaindiana.network.ShopsResponse
 import com.filaindiana.utils.GraphicsProvider
+import com.filaindiana.utils.hide
+import com.filaindiana.utils.show
 import kotlinx.android.synthetic.main.activity_maps.*
 import kotlinx.android.synthetic.main.view_marker.view.*
 import kotlinx.coroutines.CoroutineScope
@@ -37,7 +37,11 @@ class MapMarkerProvider(private val activity: MapsActivity) {
                 activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
             val marker: View = layoutInflater.inflate(R.layout.view_marker, null).apply {
                 this.view_img.load(shop.shopData.getImgResId())
-                this.view_subscription.visibility = if (isSubscriptionEnabled) VISIBLE else GONE
+                if (isSubscriptionEnabled) {
+                    this.view_subscription.show()
+                } else {
+                    this.view_subscription.hide()
+                }
                 if (shop.isReportingRequired()) {
                     this.view_text_bg.setBackgroundResource(R.drawable.bg_rounded_blue)
                     this.view_text_number.text = ""

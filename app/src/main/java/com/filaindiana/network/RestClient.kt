@@ -1,9 +1,11 @@
 package com.filaindiana.network
 
 import android.util.Log
+import com.filaindiana.utils.Firebase
 import com.filaindiana.utils.PrefsUtils
+import com.filaindiana.utils.logError
+import com.filaindiana.utils.logException
 import com.google.android.gms.maps.model.LatLng
-import com.google.firebase.crashlytics.FirebaseCrashlytics
 import okhttp3.MediaType
 import okhttp3.RequestBody
 import retrofit2.Retrofit
@@ -51,14 +53,13 @@ class RestClient {
                     "{\"market_id\":\"$shopId\",\"user_id\":\"$userId\",\"lat\":${userLocation.latitude},\"long\":${userLocation.longitude},\"queue_size\":$queueSize,\"queue_wait_minutes\":$queueTime}"
                 val body = RequestBody.create(MediaType.parse("application/octet-stream"), data)
                 val url = "https://gxlae9f8tk.execute-api.eu-central-1.amazonaws.com/"
-                FirebaseCrashlytics.getInstance().log("Data: \"$data\"")
+                Firebase.crashlytics().log("Data: \"$data\"")
                 Retrofit.Builder().baseUrl(url)
                     .addConverterFactory(GsonConverterFactory.create()).build()
                     .create(ReportApiService::class.java)
                     .report(body)
             } catch (e: Exception) {
-                Log.e("xxx", e.toString(), e)
-                FirebaseCrashlytics.getInstance().recordException(e)
+                logException(e)
             }
         }
     }
