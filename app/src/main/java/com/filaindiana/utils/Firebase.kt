@@ -51,6 +51,7 @@ class Firebase {
             QUEUE_SIZE,
             QUEUE_TIME,
             IS_SHOP_SUBSCRIBED,
+            STATE,
         }
 
         class Analytics(context: Context) {
@@ -152,8 +153,16 @@ class Firebase {
             fun logFetchingNewPoints(location: LatLng) =
                 log(Event(FETCHING_NEW_POINTS).with(USER_LOCATION, location.toString()))
 
-            fun logClickShowOpenedOnly() = log(Event(CLICK_SHOW_OPENED_ONLY))
-            fun logClickShowSubscribedOnly() = log(Event(CLICK_SHOW_SUBSCRIBED_ONLY))
+            fun logClickShowOpenedOnly(state: Boolean) = log(
+                Event(CLICK_SHOW_OPENED_ONLY)
+                    .with(STATE, state)
+            )
+
+            fun logClickShowSubscribedOnly(state: Boolean) = log(
+                Event(CLICK_SHOW_SUBSCRIBED_ONLY)
+                    .with(STATE, state)
+            )
+
             fun logShowGpsRequiredDialog() = log(Event(SHOW_GPS_REQUIRED_DIALOG))
 
             private fun log(event: Event) = fa.logEvent(event.eventName.name, event.bundle)

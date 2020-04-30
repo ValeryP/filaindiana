@@ -140,12 +140,12 @@ class MapHelper(private val activity: MapsActivity, val mMap: GoogleMap) :
     }
 
     fun onShowOpenedClick() {
-        Firebase.analytics(activity).logClickShowOpenedOnly()
+        Firebase.analytics(activity).logClickShowOpenedOnly(!PrefsUtils.isOpenedFilter())
         state.toogleOpened()
     }
 
     fun onShowSubscribedClick() {
-        Firebase.analytics(activity).logClickShowSubscribedOnly()
+        Firebase.analytics(activity).logClickShowSubscribedOnly(!PrefsUtils.isSubsctiptionFilter())
         state.toogleSubscribed()
     }
 
@@ -249,7 +249,8 @@ class MapHelper(private val activity: MapsActivity, val mMap: GoogleMap) :
                                         name,
                                         shop.shopData.getImgResId()
                                     )
-                                    Firebase.analytics(activity).logShowYouAreUnsubcribedDialog(shop)
+                                    Firebase.analytics(activity)
+                                        .logShowYouAreUnsubcribedDialog(shop)
                                 }
                             }
                         }
