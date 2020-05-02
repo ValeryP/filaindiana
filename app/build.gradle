@@ -13,12 +13,14 @@ android {
     compileSdkVersion 29
     buildToolsVersion "29.0.3"
 
+    def gitCommitCount = "git rev-list HEAD --count".execute().text.trim()
+
     defaultConfig {
         applicationId "com.filaindiana"
         minSdkVersion 21
         targetSdkVersion 29
-        versionCode 1
-        versionName "1.0"
+        versionCode 6
+        versionName "1.${versionCode}"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         testInstrumentationRunnerArguments clearPackageData: 'true'
@@ -46,14 +48,16 @@ android {
 
     buildTypes {
         release {
+            versionNameSuffix ".${gitCommitCount}"
             minifyEnabled true
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.release
+            debuggable true
         }
         debug {
+            versionNameSuffix ".${gitCommitCount}"
             applicationIdSuffix '.dev'
-            versionNameSuffix '-dev'
             firebaseCrashlytics {
                 mappingFileUploadEnabled false
             }
@@ -71,6 +75,10 @@ android {
 
     testOptions {
         execution 'ANDROIDX_TEST_ORCHESTRATOR'
+    }
+
+    sourceSets {
+        androidTest.assets.srcDirs += files("$projectDir/schemas".toString())
     }
 }
 
@@ -111,12 +119,12 @@ dependencies {
     testImplementation "androidx.room:room-testing:2.2.5"
     testImplementation 'androidx.test:core:1.2.0'
     testImplementation 'androidx.test.ext:junit:1.1.1'
+    testImplementation 'androidx.test:runner:1.2.0'
+    testImplementation 'androidx.test:rules:1.2.0'
+    testImplementation 'android.arch.persistence.room:testing:1.1.1'
+    testImplementation 'androidx.arch.core:core-runtime:2.1.0'
+    testImplementation 'androidx.arch.core:core-testing:2.1.0'
     testImplementation 'org.robolectric:robolectric:4.3.1'
 
     androidTestUtil 'androidx.test:orchestrator:1.2.0'
-
-    androidTestImplementation 'androidx.test:core:1.2.0'
-    androidTestImplementation 'androidx.test:runner:1.2.0'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
 }
