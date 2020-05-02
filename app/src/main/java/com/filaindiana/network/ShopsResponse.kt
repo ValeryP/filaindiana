@@ -133,7 +133,7 @@ class ShopsResponse : ArrayList<ShopsResponse.Shop>() {
                     "${it[0]} - ${it[1]}"
                 } else {
                     "${it[0]} - ${it[1]}, ${it[2]} - ${it[3]}"
-                }
+                }.replace("\"", "")
             }
 
             fun getLocation(): LatLng = LatLng(lat.toDouble(), long.toDouble())

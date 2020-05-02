@@ -36,3 +36,8 @@
     @com.google.gson.annotations.SerializedName <fields>;
   }
 -keep,allowobfuscation @interface com.google.gson.annotations.SerializedName
+
+# Spotlight (onboarding) lib
+-keep class com.wooplr.spotlight.** { ; }
+-keep interface com.wooplr.spotlight.*
+-keep enum com.wooplr.spotlight.**
