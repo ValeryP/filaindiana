@@ -8,6 +8,7 @@ import android.content.Intent
 import com.filaindiana.data.AppDB
 import com.filaindiana.data.SubscriptionRepository
 import com.filaindiana.utils.Firebase
+import com.filaindiana.utils.NotificationBuilder.KEY_SUBSCRIPTONS_ID
 import com.filaindiana.utils.NotificationBuilder.NOTIFICATION_ID
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
@@ -24,7 +25,7 @@ class UnsubscribeActionReceiver : BroadcastReceiver() {
         CoroutineScope(IO).launch {
             val subscriptionsDao = AppDB.getDatabase(context).subscriptionDao()
             val repo = SubscriptionRepository.getInstance(subscriptionsDao)
-            repo.deleteSubscriptions()
+            repo.deleteSubscriptions(intent.extras?.getStringArrayList(KEY_SUBSCRIPTONS_ID))
 
             Firebase.analytics(context).logSubscriptionsCanceled()
 

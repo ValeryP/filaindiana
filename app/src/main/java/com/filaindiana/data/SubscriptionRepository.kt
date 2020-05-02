@@ -3,6 +3,7 @@ package com.filaindiana.data
 import androidx.annotation.WorkerThread
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.util.*
 
 /*
  * @author Valeriy Palamarchuk
@@ -13,7 +14,6 @@ class SubscriptionRepository private constructor(private val subscriptionsDao: S
 
     fun getSubscriptions() = subscriptionsDao.getAll()
     suspend fun getSubscriptionsSync() = subscriptionsDao.getAllSync()
-    fun getSubscription(shopId: String) = subscriptionsDao.get(shopId)
     suspend fun getSubscriptionSync(shopId: String) = subscriptionsDao.getSync(shopId).firstOrNull()
 
     @WorkerThread
@@ -25,9 +25,7 @@ class SubscriptionRepository private constructor(private val subscriptionsDao: S
         lat: Double,
         lng: Double
     ) = withContext(Dispatchers.IO) {
-        subscriptionsDao.insert(
-            Subscription(shopId, shopName, shopAddress, shopBrand, lat, lng, true)
-        )
+        subscriptionsDao.insert(Subscription(shopId, shopName, shopAddress, shopBrand, lat, lng))
     }
 
     @WorkerThread
@@ -36,8 +34,8 @@ class SubscriptionRepository private constructor(private val subscriptionsDao: S
     }
 
     @WorkerThread
-    suspend fun deleteSubscriptions() = withContext(Dispatchers.IO) {
-        subscriptionsDao.deleteAll()
+    suspend fun deleteSubscriptions(ids: ArrayList<String>?) = withContext(Dispatchers.IO) {
+        ids?.forEach { subscriptionId -> deleteSubscription(subscriptionId) }
     }
 
     companion object {

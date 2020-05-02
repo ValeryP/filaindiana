@@ -48,7 +48,7 @@ class ShopsResponse : ArrayList<ShopsResponse.Shop>() {
                 ).toString()
             }
 
-            private fun getUpdateTime(): DateTime {
+            fun getUpdateTime(): DateTime {
                 val pattern = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss")
                 return try {
                     LocalDateTime.parse(timestamp.split(".").first(), pattern).toDateTime()

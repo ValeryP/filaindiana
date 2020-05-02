@@ -17,6 +17,7 @@ import com.filaindiana.data.Subscription
 import com.filaindiana.map.MapsActivity
 import com.filaindiana.worker.CHANNEL_ID
 import com.filaindiana.worker.UnsubscribeActionReceiver
+import java.util.ArrayList
 
 /*
  * @author Valeriy Palamarchuk
@@ -25,6 +26,7 @@ import com.filaindiana.worker.UnsubscribeActionReceiver
  */
 object NotificationBuilder {
     const val KEY_SUBSCRIPTON_LOCATION = "SUBSCRIPTON_LOCATION"
+    const val KEY_SUBSCRIPTONS_ID = "SUBSCRIPTONS_ID"
     const val NOTIFICATION_ID = 101010
 
     internal fun showNotification(subscriptions: List<Subscription>, con: Context) {
@@ -37,7 +39,9 @@ object NotificationBuilder {
             addCategory(CATEGORY_LAUNCHER)
             putExtra(KEY_SUBSCRIPTON_LOCATION, subscriptions.first().getLocation())
         }
-        val unsubscribeIntent = Intent(con, UnsubscribeActionReceiver::class.java)
+        val unsubscribeIntent = Intent(con, UnsubscribeActionReceiver::class.java).apply {
+            putStringArrayListExtra(KEY_SUBSCRIPTONS_ID, subscriptions.map { it.shopId } as ArrayList<String>)
+        }
         val pendingIntentUnsubscribeIntent =
             PendingIntent.getBroadcast(con, 0, unsubscribeIntent, FLAG_UPDATE_CURRENT)
         val pendingIntentOpenApp: PendingIntent =

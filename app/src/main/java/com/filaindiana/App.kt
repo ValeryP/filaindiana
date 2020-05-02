@@ -20,14 +20,13 @@ class App : Application() {
     override fun onCreate() {
         super.onCreate()
         JodaTimeAndroid.init(this)
-        ImageLoader(this) {
-            allowHardware(false)
-            okHttpClient {
+        ImageLoader.Builder(this)
+            .allowHardware(false)
+            .okHttpClient {
                 OkHttpClient.Builder()
                     .cache(CoilUtils.createDefaultCache(this@App))
                     .build()
-            }
-        }
+            }.build()
         Prefs.Builder()
             .setContext(this)
             .setMode(MODE_PRIVATE)

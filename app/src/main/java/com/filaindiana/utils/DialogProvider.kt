@@ -106,6 +106,7 @@ object DialogProvider {
                 if (isSubscribed) {
                     layout_dialogMarkerDetails_button_subscribe.text =
                         ctx.getString(R.string.unsubscribe)
+                    @Suppress("DEPRECATION")
                     layout_dialogMarkerDetails_button_subscribe.background.setColorFilter(
                         ResourcesCompat.getColor(
                             ctx.resources,
@@ -126,6 +127,7 @@ object DialogProvider {
                 } else {
                     layout_dialogMarkerDetails_button_subscribe.text =
                         ctx.getString(R.string.subscribe_for_updates)
+                    @Suppress("DEPRECATION")
                     layout_dialogMarkerDetails_button_subscribe.background.setColorFilter(
                         ResourcesCompat.getColor(
                             ctx.resources,

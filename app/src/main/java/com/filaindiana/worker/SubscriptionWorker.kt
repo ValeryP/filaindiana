@@ -4,7 +4,7 @@ package com.filaindiana.worker
 
 import android.content.Context
 import androidx.work.*
-import androidx.work.ExistingPeriodicWorkPolicy.KEEP
+import androidx.work.ExistingPeriodicWorkPolicy.REPLACE
 import androidx.work.NetworkType.CONNECTED
 import com.filaindiana.data.AppDB
 import com.filaindiana.data.SubscriptionRepository
@@ -37,7 +37,7 @@ class NotificationWorker(appContext: Context, workerParams: WorkerParameters) :
                 .setConstraints(constraints)
                 .build()
             val workManager = WorkManager.getInstance(context)
-            workManager.enqueueUniquePeriodicWork(CHANNEL_ID, KEEP, work)
+            workManager.enqueueUniquePeriodicWork(CHANNEL_ID, REPLACE, work)
             Firebase.analytics(context).logWorkerStarted()
         }
     }
@@ -46,14 +46,17 @@ class NotificationWorker(appContext: Context, workerParams: WorkerParameters) :
         return try {
             val subscriptions = repo.getSubscriptionsSync()
             val shops = subscriptions.map { RestClient.getShops(it.lat, it.lng) }.flatten()
-            val triggeredSubscription = subscriptions.filter { s ->
-                val shop = shops.firstOrNull { it.shopData.marketId == s.shopId }
-                shop != null && shop.shopData.isOpen && (shop.shopShopState?.queueWaitMinutes
-                    ?: Int.MAX_VALUE) < 15
+            val triggered = subscriptions.filter { subscription ->
+                val shop = shops.firstOrNull { it.shopData.marketId == subscription.shopId }
+                val isOpen = shop?.shopData?.isOpen ?: false
+                val isStateUpdated =
+                    shop?.shopShopState?.getUpdateTime()?.isAfter(subscription.getTime()) ?: false
+                val hasSmallerQueue = (shop?.shopShopState?.queueWaitMinutes ?: Int.MAX_VALUE) <= 15
+                isOpen && isStateUpdated && hasSmallerQueue
             }
-            logInfo { "${subscriptions.size} subscription, ${shops.size} shops, ${triggeredSubscription.size} alerts" }
-            NotificationBuilder.showNotification(triggeredSubscription, applicationContext)
-            Firebase.analytics(this.applicationContext).logWorkerNotificationTriggered(triggeredSubscription)
+            logInfo { "${subscriptions.size} subscription, ${shops.size} shops, ${triggered.size} alerts" }
+            NotificationBuilder.showNotification(triggered, applicationContext)
+            Firebase.analytics(this.applicationContext).logWorkerNotificationTriggered(triggered)
             Result.success()
         } catch (e: Exception) {
             Result.failure()
