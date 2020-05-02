@@ -53,7 +53,10 @@ fun List<ShopsResponse.Shop>.filterOpen(): List<ShopsResponse.Shop> {
 
 fun List<ShopsResponse.Shop>.filterSubscribed(subscriptions: List<Subscription>): List<ShopsResponse.Shop> {
     val subscriptionIds = subscriptions.map { it.shopId }
-    return this.filter { subscriptionIds.contains(it.shopData.marketId) }
+    return this.filter {
+        val element = it.shopData.marketId
+        subscriptionIds.contains(element)
+    }
 }
 
 fun Drawable.toBitmapScaled(width: Int): Bitmap {

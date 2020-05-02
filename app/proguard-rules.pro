@@ -27,3 +27,12 @@
 # Crashlytics exclude for faster builds
 -keep class com.google.firebase.crashlytics.** { *; }
 -dontwarn com.google.firebase.crashlytics.**
+
+# JodaTime: https://github.com/dlew/joda-time-android/issues/206#issuecomment-576666450
+-keep class net.danlew.android.joda.R$raw { *; }
+
+# Gson annotations: https://stackoverflow.com/a/57904190/1012234
+-keepclassmembers,allowobfuscation class * {
+    @com.google.gson.annotations.SerializedName <fields>;
+  }
+-keep,allowobfuscation @interface com.google.gson.annotations.SerializedName
