@@ -15,6 +15,51 @@
       },
       "oauth_client": [
         {
+          "client_id": "295172027083-mabc8hv22ttg985a69jvr94b3a1fr1st.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.filaindiana",
+            "certificate_hash": "2ebcc4b1ce57c2668b742559d2a0ff22be387222"
+          }
+        },
+        {
+          "client_id": "295172027083-cfcn3d820tpr4hrvnjabtk9jhe3e1t7r.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCu7xUJPiF_7Vx3ew_pwJpl6UC9J4w9R6w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "295172027083-cfcn3d820tpr4hrvnjabtk9jhe3e1t7r.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:295172027083:android:5246f929ece988d791a14e",
+        "android_client_info": {
+          "package_name": "com.filaindiana.dev"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "295172027083-a0986u0ipnu2dfgpnl2vgmeaktofdsur.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.filaindiana.dev",
+            "certificate_hash": "0c791656a4d30fb3108b7b45ddf93c12a6a5191f"
+          }
+        },
+        {
           "client_id": "295172027083-cfcn3d820tpr4hrvnjabtk9jhe3e1t7r.apps.googleusercontent.com",
           "client_type": 3
         }
