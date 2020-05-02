@@ -2,7 +2,7 @@
     <string name="app_name" translatable="false">FilaIndiana</string>
     <string name="db_name" translatable="false">db-filaindiana</string>
 
-    <string name="only_opened">Only opened</string>
+    <string name="open_now">Open now</string>
     <string name="filter_shops_subscribed">Filtering for shops you subscribed</string>
     <string name="filter_shops_opened">Filtering for opened shops only</string>
     <string name="no_subscribed_shops">No subscribed shops found, showing all</string>

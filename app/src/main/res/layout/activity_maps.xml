@@ -59,7 +59,7 @@
             android:background="@drawable/bg_rounded_white"
             android:checked="false"
             android:padding="10dp"
-            android:text="@string/only_opened"
+            android:text="@string/open_now"
             android:visibility="gone" />
     </FrameLayout>
 

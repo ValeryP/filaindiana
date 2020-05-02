@@ -15,7 +15,7 @@ import kotlinx.android.synthetic.main.activity_maps.*
  */
 object OnboardingManager {
     fun startOnlyClosedOnboarding(a: MapsActivity) {
-        val onlyOpened = a.getString(R.string.only_opened)
+        val onlyOpened = a.getString(R.string.open_now)
         SpotlightView.Builder(a)
             .setConfiguration(config(a))
             .target(a.layout_hide_closed_container)
