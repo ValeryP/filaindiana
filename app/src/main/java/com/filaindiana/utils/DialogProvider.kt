@@ -169,12 +169,15 @@ object DialogProvider {
                     "${shop.shopData.address}, ${shop.shopData.city}"
                 layout_dialogReport_openHours.text =
                     context.getString(R.string.open_hours, shop.shopData.getOpeningHoursFormatted())
-                layout_dialogReport_queueSizeSeekbar.setIndicatorTextFormat(
-                    context.getString(R.string.n_people, "\${PROGRESS}")
-                )
                 layout_dialogReport_queueSizeSeekbar.onSeekChangeListener =
                     object : OnSeekChangeListener {
                         override fun onSeeking(seekParams: SeekParams) {
+                            layout_dialogReport_queueSizeSeekbar.setIndicatorTextFormat(
+                                "\${PROGRESS} " + resources.getQuantityString(
+                                    R.plurals.n_people,
+                                    seekParams.progress
+                                )
+                            )
                             logDebug { seekParams.progress.toString() }
                         }
 

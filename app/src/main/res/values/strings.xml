@@ -19,9 +19,12 @@
     <string name="open_hours">Open: %1$s</string>
     <string name="last_reported">Last reported: %1$s</string>
     <string name="queue">%1$d pers / %2$d min</string>
-    <string name="n_people">%1$s people</string>
+    <plurals name="n_people">
+        <item quantity="one">people</item>
+        <item quantity="other">people</item>
+    </plurals>
     <string name="n_min">%1$s min</string>
-    <string name="queue_details">%1$s supermarkets have a queue less than 15 min</string>
+    <string name="queue_details">%1$s – queue less than 15 min</string>
     <string name="favorites">Favorites</string>
     <string name="unfavorite">Remove from favorites</string>
     <string name="add_to_favorites">Add to Favorites</string>
