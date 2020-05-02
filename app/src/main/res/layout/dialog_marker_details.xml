@@ -117,7 +117,7 @@
         android:minWidth="150dp"
         android:paddingStart="32dp"
         android:paddingEnd="32dp"
-        android:text="@string/subscribe_for_updates"
+        android:text="@string/add_to_favorites"
         android:textColor="@color/colorTextWhite"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"

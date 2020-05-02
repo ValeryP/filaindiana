@@ -20,18 +20,18 @@ object OnboardingManager {
             .setConfiguration(config(a))
             .target(a.layout_hide_closed_container)
             .headingTvText(onlyOpened)
-            .subHeadingTvText(a.getString(R.string.only_shops_currently_opened))
+            .subHeadingTvText(a.getString(R.string.only_open_supermarkets))
             .usageId(onlyOpened)
             .show()
     }
 
     fun startOnlySubscribtionOnboarding(a: MapsActivity) {
-        val onlySubscribed = a.getString(R.string.show_subscriptions)
+        val onlySubscribed = a.getString(R.string.show_favorites)
         SpotlightView.Builder(a)
             .setConfiguration(config(a))
             .target(a.layout_show_subscribed)
             .headingTvText(onlySubscribed)
-            .subHeadingTvText(a.getString(R.string.only_shops_currently_subscribed))
+            .subHeadingTvText(a.getString(R.string.only_favorites_supermarkets))
             .usageId(onlySubscribed)
             .show()
     }

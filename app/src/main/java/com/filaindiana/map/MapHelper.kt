@@ -56,24 +56,24 @@ class MapHelper(private val activity: MapsActivity, val mMap: GoogleMap) :
     private fun invalidateViews(filters: ShopFilters) {
         val color = ResourcesCompat.getColor(
             activity.resources,
-            if (filters.isSubscribed) R.color.colorMarkerRed else R.color.colorMarkerGrey,
+            if (filters.isSubscribed) R.color.colorMarkerGold else R.color.colorMarkerGrey,
             null
         )
         activity.layout_show_subscribed.drawable.setTint(color)
         activity.layout_show_subscribed.alpha = if (filters.isSubscribed) 1f else 0.5f
         if (filters.isSubscribed && !PrefsUtils.isOnboardingShownSubsctiptionFilter()) {
-            Toasty.info(activity, activity.getString(R.string.filter_shops_subscribed)).show()
+            Toasty.info(activity, activity.getString(R.string.show_favorite_supermarkets)).show()
             PrefsUtils.setOnboardingShownSubsctiptionFilter()
         }
         if (filters.isOnlyOpened && !PrefsUtils.isOnboardingShownOpenedFilter()) {
-            Toasty.info(activity, activity.getString(R.string.filter_shops_opened)).show()
+            Toasty.info(activity, activity.getString(R.string.show_open_supermarkets)).show()
             PrefsUtils.setOnboardingShownOpenedFilter()
         }
     }
 
     private fun invalidateMap(points: List<Shop>) {
         if (points.isEmpty() && state.shopsAll().isNotEmpty()) {
-            Toasty.info(activity, activity.getString(R.string.no_subscribed_shops)).show()
+            Toasty.warning(activity, activity.getString(R.string.no_favorite_supermarkets)).show()
             Timer().schedule(1000) { CoroutineScope(Main).launch { state.toogleSubscribed() } }
         } else {
             CoroutineScope(Main).launch {

@@ -56,14 +56,14 @@ object NotificationBuilder {
             null
         )!!.toBitmapScaled(256).makeSquare()
         val builder = NotificationCompat.Builder(con, CHANNEL_ID)
-            .setSmallIcon(R.drawable.ic_notifications_active_black_24dp)
+            .setSmallIcon(R.drawable.ic_notification)
             .setLargeIcon(largeIcon)
             .setContentTitle(con.getString(R.string.time_to_shop))
             .setContentText(content)
             .setStyle(NotificationCompat.BigTextStyle().bigText(contentBig))
             .setAutoCancel(true)
             .addAction(
-                R.drawable.ic_notifications_off_black_24dp,
+                R.drawable.ic_star_outline_24px,
                 con.getString(R.string.unsibscribe_all),
                 pendingIntentUnsubscribeIntent
             )

@@ -105,7 +105,7 @@ object DialogProvider {
                 }
                 if (isSubscribed) {
                     layout_dialogMarkerDetails_button_subscribe.text =
-                        ctx.getString(R.string.unsubscribe)
+                        ctx.getString(R.string.unfavorite)
                     @Suppress("DEPRECATION")
                     layout_dialogMarkerDetails_button_subscribe.background.setColorFilter(
                         ResourcesCompat.getColor(
@@ -117,7 +117,7 @@ object DialogProvider {
                     layout_dialogMarkerDetails_button_subscribe.setCompoundDrawablesWithIntrinsicBounds(
                         GraphicsProvider.getColoredIcon(
                             ctx,
-                            R.drawable.ic_notifications_off_black_24dp,
+                            R.drawable.ic_star_outline_24px,
                             R.color.colorTextWhite
                         ),
                         null,
@@ -126,7 +126,7 @@ object DialogProvider {
                     )
                 } else {
                     layout_dialogMarkerDetails_button_subscribe.text =
-                        ctx.getString(R.string.subscribe_for_updates)
+                        ctx.getString(R.string.add_to_favorites)
                     @Suppress("DEPRECATION")
                     layout_dialogMarkerDetails_button_subscribe.background.setColorFilter(
                         ResourcesCompat.getColor(
@@ -138,7 +138,7 @@ object DialogProvider {
                     layout_dialogMarkerDetails_button_subscribe.setCompoundDrawablesWithIntrinsicBounds(
                         GraphicsProvider.getColoredIcon(
                             ctx,
-                            R.drawable.ic_notifications_active_black_24dp,
+                            R.drawable.ic_star_24px,
                             R.color.colorTextWhite
                         ),
                         null,
@@ -227,7 +227,7 @@ object DialogProvider {
 
     fun showSubscribedDialog(ctx: Context, imgResId: Int) {
         MaterialDialog(ctx).show {
-            title(text = ctx.getString(R.string.subscribed))
+            title(text = ctx.getString(R.string.favorites))
             icon(imgResId)
             message(text = ctx.getString(R.string.subscribed_details))
             positiveButton(text = ctx.getString(android.R.string.ok))
@@ -236,7 +236,7 @@ object DialogProvider {
 
     fun showUnsubscribedDialog(ctx: Context, name: String, imgResId: Int) {
         MaterialDialog(ctx).show {
-            title(text = ctx.getString(R.string.unsubscribed))
+            title(text = ctx.getString(R.string.removed))
             icon(imgResId)
             message(text = ctx.getString(R.string.no_updates, name))
             positiveButton(text = ctx.getString(android.R.string.ok))

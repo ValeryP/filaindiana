@@ -28,10 +28,10 @@
             android:layout_height="16dp"
             android:visibility="gone"
             android:background="@drawable/bg_rounded_white"
-            android:tint="@color/colorMarkerRed"
+            android:tint="@color/colorMarkerGold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_notifications_active_black_24dp"
+            app:srcCompat="@drawable/ic_star_24px"
             tools:ignore="ContentDescription" />
 
         <TextView

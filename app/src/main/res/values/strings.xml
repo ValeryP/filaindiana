@@ -3,11 +3,11 @@
     <string name="db_name" translatable="false">db-filaindiana</string>
 
     <string name="open_now">Open now</string>
-    <string name="filter_shops_subscribed">Filtering for shops you subscribed</string>
-    <string name="filter_shops_opened">Filtering for opened shops only</string>
-    <string name="no_subscribed_shops">No subscribed shops found, showing all</string>
+    <string name="show_favorite_supermarkets">Showing only favorite supermarkets</string>
+    <string name="show_open_supermarkets">Showing only open supermarkets</string>
+    <string name="no_favorite_supermarkets">You don\'t have favorite supermarkets, showing all…</string>
     <string name="looking_for_location">Looking for your location…</string>
-    <string name="location_found">Location successfully found!</string>
+    <string name="location_found">Location successfully found</string>
     <string name="closed">Closed</string>
     <string name="report">Report</string>
     <string name="min">min</string>
@@ -21,20 +21,20 @@
     <string name="queue">%1$d pers / %2$d min</string>
     <string name="n_people">%1$s people</string>
     <string name="n_min">%1$s min</string>
-    <string name="queue_details">%1$s shops have a queue less than 15 min</string>
-    <string name="unsubscribe">Unsubscribe</string>
-    <string name="subscribe_for_updates">Subscribe for updates</string>
-    <string name="subscribed">Subscribed</string>
+    <string name="queue_details">%1$s supermarkets have a queue less than 15 min</string>
+    <string name="favorites">Favorites</string>
+    <string name="unfavorite">Remove from favorites</string>
+    <string name="add_to_favorites">Add to Favorites</string>
     <string name="subscribed_details">You\'re subscribed for the updates. We\'ll notify you once the queue waiting time become less than 15 min.</string>
-    <string name="unsubscribed">Unsubscribed</string>
+    <string name="removed">Removed</string>
     <string name="no_updates">"You will not longer receive the updates for %1$s"</string>
-    <string name="requires_location_permission_details">The app requires location permission to find closest shops. Click "Enable" to open an application settings screen and grant permissions.</string>
+    <string name="requires_location_permission_details">The app requires location permission to find closest supermarkets. Click "Enable" to open an application settings screen and grant permissions.</string>
     <string name="time_to_shop">Time to shop!</string>
-    <string name="unsibscribe_all">Unsubscribe these shops</string>
+    <string name="unsibscribe_all">Unfavorite supermarkets</string>
     <string name="notification_channel_description">Notification when the supermarket has a queue less than 15 min</string>
-    <string name="only_shops_currently_opened">Show only supermarkets which are currently opened</string>
-    <string name="show_subscriptions">Show subscriptions</string>
-    <string name="only_shops_currently_subscribed">Show only supermarkets which you are currently subscribed for updates</string>
+    <string name="only_open_supermarkets">Show only supermarkets which are currently opened</string>
+    <string name="show_favorites">Show favorites</string>
+    <string name="only_favorites_supermarkets">Show only Favorite ⭐️ supermarkets which you are currently subscribed for updates</string>
     <string name="im_in_the_queue_now">I\'m in the queue now</string>
     <string name="send_report">Send report</string>
     <string name="how_many_people_are_there_in_the_queue">How many people are there in the queue?</string>
