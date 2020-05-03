@@ -228,24 +228,6 @@ object DialogProvider {
         }
     }
 
-    fun showSubscribedDialog(ctx: Context, imgResId: Int) {
-        MaterialDialog(ctx).show {
-            title(text = ctx.getString(R.string.favorites))
-            icon(imgResId)
-            message(text = ctx.getString(R.string.subscribed_details))
-            positiveButton(text = ctx.getString(android.R.string.ok))
-        }
-    }
-
-    fun showUnsubscribedDialog(ctx: Context, name: String, imgResId: Int) {
-        MaterialDialog(ctx).show {
-            title(text = ctx.getString(R.string.removed))
-            icon(imgResId)
-            message(text = ctx.getString(R.string.no_updates, name))
-            positiveButton(text = ctx.getString(android.R.string.ok))
-        }
-    }
-
     fun showPermissionRequiredDialog(ctx: Context) {
         Firebase.analytics(ctx).logShowPermissionsRationaleDialog()
         MaterialDialog(ctx).show {

@@ -47,7 +47,10 @@ class MapHelper(private val activity: MapsActivity, val mMap: GoogleMap) :
         mMap.setOnMarkerClickListener(this@MapHelper)
         state = MapState()
         repo = SubscriptionRepository.getInstance(AppDB.getDatabase(activity).subscriptionDao())
-        repo.getSubscriptions().observe(activity, Observer { state.setSubscriptions(it) })
+        repo.getSubscriptions().observe(activity, Observer {
+            activity.invalidateMenu(it.isNotEmpty())
+            state.setSubscriptions(it)
+        })
         state.shopsFiltered.observe(activity, Observer { shops -> invalidateMap(shops) })
         state.filters.observe(activity, Observer { invalidateViews(it) })
     }
@@ -226,18 +229,21 @@ class MapHelper(private val activity: MapsActivity, val mMap: GoogleMap) :
                                         state.getShopClusterLocation(shop).longitude
                                     )
                                     Firebase.analytics(activity).logSavedSubscription(shop)
-                                    DialogProvider.showSubscribedDialog(
+                                    Toasty.success(
                                         activity,
-                                        shop.shopData.getImgResId()
-                                    )
+                                        activity.getString(R.string.subscribed_details),
+                                        LENGTH_LONG,
+                                        true
+                                    ).show()
                                     Firebase.analytics(activity).logShowYouAreSubcribedDialog(shop)
                                 } else {
                                     repo.deleteSubscription(subscription.shopId)
-                                    DialogProvider.showUnsubscribedDialog(
+                                    Toasty.success(
                                         activity,
-                                        name,
-                                        shop.shopData.getImgResId()
-                                    )
+                                        activity.getString(R.string.no_updates, name),
+                                        LENGTH_LONG,
+                                        true
+                                    ).show()
                                     Firebase.analytics(activity)
                                         .logShowYouAreUnsubcribedDialog(shop)
                                 }

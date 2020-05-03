@@ -19,7 +19,7 @@ class FavoritesActivity : AppCompatActivity() {
 
         val favoritesAdapter = FavoritesAdapter()
         val linearLayoutManager = LinearLayoutManager(this)
-        val recyclerView = favorites_recyclerView.apply {
+        favorites_recyclerView.apply {
             setHasFixedSize(true)
             layoutManager = linearLayoutManager
             adapter = favoritesAdapter
@@ -28,6 +28,12 @@ class FavoritesActivity : AppCompatActivity() {
         val subscriptions = AppDB.getDatabase(this).subscriptionDao().let {
             SubscriptionRepository.getInstance(it).getSubscriptions()
         }
-        subscriptions.observe(this, Observer { favoritesAdapter.update(it) })
+        subscriptions.observe(this, Observer {
+            if (it.isNotEmpty()) {
+                favoritesAdapter.update(it)
+            } else {
+                finish()
+            }
+        })
     }
 }

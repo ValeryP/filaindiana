@@ -32,6 +32,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, EasyPermissions.Pe
 
     private lateinit var mapHelper: MapHelper
     private var subscriptionLocation: LatLng? = null
+    private var isSubscriptionsAvailable: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,8 +51,13 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, EasyPermissions.Pe
         askLocationPermissions()
     }
 
+    fun invalidateMenu(shouldShowMenu: Boolean) {
+        isSubscriptionsAvailable = shouldShowMenu
+        invalidateOptionsMenu()
+    }
+
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.menu_map_activity, menu)
+        if (isSubscriptionsAvailable) menuInflater.inflate(R.menu.menu_map_activity, menu)
         return true
     }
 
@@ -154,7 +160,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, EasyPermissions.Pe
 
     @SuppressLint("ClickableViewAccessibility")
     private fun setupFavoritesButton() {
-//        layout_favorites.show()
         layout_favorites.isChecked = PrefsUtils.isFavoritesFilter()
         layout_favorites.setOnTouchListener { v, event ->
             v.onTouchEvent(event)
