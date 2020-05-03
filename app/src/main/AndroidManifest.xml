@@ -19,7 +19,7 @@
         android:supportsRtl="false"
         android:theme="@style/AppTheme"
         tools:replace="android:supportsRtl">
-
+        <activity android:name=".favorites.FavoritesActivity" />
         <activity
             android:name=".map.MapsActivity"
             android:label="@string/app_name"
@@ -32,6 +32,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <receiver android:name=".worker.UnsubscribeActionReceiver" />
 
         <meta-data
@@ -41,6 +42,5 @@
             android:name="firebase_performance_logcat_enabled"
             android:value="true" />
     </application>
-
 
 </manifest>

@@ -24,44 +24,53 @@
         tools:layout_conversion_absoluteHeight="0dp"
         tools:layout_conversion_absoluteWidth="0dp" />
 
-    <ImageView
-        android:id="@+id/layout_show_subscribed"
+    <LinearLayout
+        android:id="@+id/layout_filters_container"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="8dp"
+        android:layout_margin="16dp"
         android:background="@drawable/bg_rounded_white"
-        android:checked="true"
-        android:padding="8dp"
-        android:src="@drawable/ic_stars_24px"
-        android:tint="@color/colorMarkerGold"
-        android:visibility="gone"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="ContentDescription" />
-
-    <FrameLayout
-        android:id="@+id/layout_hide_closed_container"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:paddingStart="12dp"
+        android:orientation="vertical"
+        android:padding="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        tools:ignore="RtlSymmetry">
+        android:gravity="right"
+        android:visibility="gone"
+        tools:ignore="RtlHardcoded">
 
-        <Switch
-            android:id="@+id/layout_hide_closed"
+        <FrameLayout
+            android:id="@+id/layout_favorites_container"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:layout_marginBottom="16dp"
-            android:background="@drawable/bg_rounded_white"
-            android:checked="false"
-            android:padding="10dp"
-            android:text="@string/open_now"
-            android:visibility="gone" />
-    </FrameLayout>
+            android:paddingStart="12dp"
+            tools:ignore="RtlSymmetry">
+
+            <Switch
+                android:id="@+id/layout_favorites"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:checked="false"
+                android:text="@string/favorites"
+                android:visibility="gone" />
+        </FrameLayout>
+
+        <FrameLayout
+            android:id="@+id/layout_open_now_container"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingStart="12dp"
+            tools:ignore="RtlSymmetry">
+
+            <Switch
+                android:id="@+id/layout_open_now"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="false"
+                android:text="@string/open_now"
+                android:visibility="gone" />
+        </FrameLayout>
+    </LinearLayout>
 
     <FrameLayout
         android:id="@+id/layout_footer_view"

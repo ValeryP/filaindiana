@@ -38,7 +38,7 @@ object GraphicsProvider {
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    suspend fun getBitmapFromViewO(view: View, activity: MapsActivity): Bitmap? =
+    suspend fun getBitmapFromViewO(view: View, activity: MapsActivity): Bitmap =
         suspendCoroutine { cont ->
             val displayMetrics = DisplayMetrics()
             activity.windowManager.defaultDisplay.getMetrics(displayMetrics)
@@ -64,7 +64,7 @@ object GraphicsProvider {
             )
         }
 
-    fun getBitmapFromView(view: View, activity: MapsActivity): Bitmap? {
+    fun getBitmapFromView(view: View, activity: MapsActivity): Bitmap {
         val displayMetrics = DisplayMetrics()
         activity.windowManager.defaultDisplay.getMetrics(displayMetrics)
         view.measure(displayMetrics.widthPixels, displayMetrics.heightPixels)

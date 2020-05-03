@@ -5,11 +5,13 @@ import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import com.filaindiana.R
+import com.filaindiana.data.KEY_SUBSCRIPTON_LOCATION
+import com.filaindiana.favorites.FavoritesActivity
 import com.filaindiana.utils.*
-import com.filaindiana.utils.NotificationBuilder.KEY_SUBSCRIPTON_LOCATION
 import com.filaindiana.worker.NotificationWorker
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -23,6 +25,7 @@ import pub.devrel.easypermissions.EasyPermissions
 
 
 const val RC_PERMISSIONS_LOCATION = 1
+const val RC_FAVORITES = 2
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback, EasyPermissions.PermissionCallbacks,
     EasyPermissions.RationaleCallbacks {
@@ -45,6 +48,22 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, EasyPermissions.Pe
         subscriptionLocation = intent?.extras?.getParcelable(KEY_SUBSCRIPTON_LOCATION)
         logDebug { "onNewIntent: $subscriptionLocation" }
         askLocationPermissions()
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_map_activity, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.menu_favorites -> {
+                val intent = Intent(this, FavoritesActivity::class.java)
+                startActivityForResult(intent, RC_FAVORITES)
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
@@ -89,9 +108,18 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, EasyPermissions.Pe
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == DEFAULT_SETTINGS_REQ_CODE) {
-            requestLocationSearch()
-            Firebase.analytics(this).logPermissionsAccepted()
+        when (requestCode) {
+            DEFAULT_SETTINGS_REQ_CODE -> {
+                requestLocationSearch()
+                Firebase.analytics(this).logPermissionsAccepted()
+            }
+            RC_FAVORITES -> {
+                subscriptionLocation = data?.extras?.getParcelable(KEY_SUBSCRIPTON_LOCATION)
+                if (subscriptionLocation != null) {
+                    logDebug { "onActivityResult: $subscriptionLocation" }
+                    askLocationPermissions()
+                }
+            }
         }
     }
 
@@ -116,30 +144,33 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, EasyPermissions.Pe
             val zoomLocation = subscriptionLocation ?: userLocation
             mapHelper.focusMap(zoomLocation) {
                 subscriptionLocation = null
-                setupClosedShopsSwitch()
-                setupSubscribedButton()
+                layout_filters_container.show()
+                setupOpenNowSwitch()
+                setupFavoritesButton()
                 OnboardingManager.startOnlyClosedOnboarding(this@MapsActivity)
             }
         }
     }
 
     @SuppressLint("ClickableViewAccessibility")
-    private fun setupSubscribedButton() {
-        layout_show_subscribed.setOnTouchListener { v, event ->
+    private fun setupFavoritesButton() {
+//        layout_favorites.show()
+        layout_favorites.isChecked = PrefsUtils.isFavoritesFilter()
+        layout_favorites.setOnTouchListener { v, event ->
             v.onTouchEvent(event)
             true
         }
-        layout_show_subscribed.setOnClickListener { mapHelper.onShowSubscribedClick() }
+        layout_favorites.setOnCheckedChangeListener { _, _ -> mapHelper.onShowSubscribedClick() }
     }
 
     @SuppressLint("ClickableViewAccessibility")
-    private fun setupClosedShopsSwitch() {
-        layout_hide_closed.show()
-        layout_hide_closed.isChecked = PrefsUtils.isOpenedFilter()
-        layout_hide_closed.setOnTouchListener { v, event ->
+    private fun setupOpenNowSwitch() {
+        layout_open_now.show()
+        layout_open_now.isChecked = PrefsUtils.isOpenNowFilter()
+        layout_open_now.setOnTouchListener { v, event ->
             v.onTouchEvent(event)
             true
         }
-        layout_hide_closed.setOnCheckedChangeListener { _, _ -> mapHelper.onShowOpenedClick() }
+        layout_open_now.setOnCheckedChangeListener { _, _ -> mapHelper.onShowOpenedClick() }
     }
 }

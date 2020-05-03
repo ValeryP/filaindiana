@@ -13,6 +13,8 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.res.ResourcesCompat
 import com.filaindiana.R
+import com.filaindiana.data.KEY_SUBSCRIPTONS_ID
+import com.filaindiana.data.KEY_SUBSCRIPTON_LOCATION
 import com.filaindiana.data.Subscription
 import com.filaindiana.map.MapsActivity
 import com.filaindiana.worker.CHANNEL_ID
@@ -25,8 +27,6 @@ import java.util.ArrayList
  * Created on 25.04.2020
  */
 object NotificationBuilder {
-    const val KEY_SUBSCRIPTON_LOCATION = "SUBSCRIPTON_LOCATION"
-    const val KEY_SUBSCRIPTONS_ID = "SUBSCRIPTONS_ID"
     const val NOTIFICATION_ID = 101010
 
     internal fun showNotification(subscriptions: List<Subscription>, con: Context) {

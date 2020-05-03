@@ -4,7 +4,6 @@ import android.Manifest.permission.ACCESS_COARSE_LOCATION
 import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.annotation.SuppressLint
 import android.widget.Toast.LENGTH_LONG
-import androidx.core.content.res.ResourcesCompat
 import androidx.lifecycle.Observer
 import com.filaindiana.R
 import com.filaindiana.data.AppDB
@@ -54,13 +53,6 @@ class MapHelper(private val activity: MapsActivity, val mMap: GoogleMap) :
     }
 
     private fun invalidateViews(filters: ShopFilters) {
-        val color = ResourcesCompat.getColor(
-            activity.resources,
-            if (filters.isSubscribed) R.color.colorMarkerGold else R.color.colorMarkerGrey,
-            null
-        )
-        activity.layout_show_subscribed.drawable.setTint(color)
-        activity.layout_show_subscribed.alpha = if (filters.isSubscribed) 1f else 0.5f
         if (filters.isSubscribed && !PrefsUtils.isOnboardingShownSubsctiptionFilter()) {
             Toasty.info(activity, activity.getString(R.string.show_favorite_supermarkets)).show()
             PrefsUtils.setOnboardingShownSubsctiptionFilter()
@@ -84,9 +76,9 @@ class MapHelper(private val activity: MapsActivity, val mMap: GoogleMap) :
                 val isSubscribtionsVisible = points.filterSubscribed(subscriptions).isNotEmpty()
                 if (isSubscribtionsVisible) {
                     OnboardingManager.startOnlySubscribtionOnboarding(activity)
-                    activity.layout_show_subscribed.show()
+                    activity.layout_favorites.show()
                 } else {
-                    activity.layout_show_subscribed.hide()
+                    activity.layout_favorites.hide()
                 }
                 defreezeMap()
             }
@@ -94,10 +86,10 @@ class MapHelper(private val activity: MapsActivity, val mMap: GoogleMap) :
     }
 
     private fun freezeMap() {
-        activity.layout_show_subscribed.isEnabled = false
-        activity.layout_show_subscribed.isClickable = false
-        activity.layout_hide_closed.isEnabled = false
-        activity.layout_hide_closed.isClickable = false
+        activity.layout_favorites.isEnabled = false
+        activity.layout_open_now.isEnabled = false
+        activity.layout_favorites.isClickable = false
+        activity.layout_open_now.isClickable = false
         mMap.uiSettings.apply {
             isRotateGesturesEnabled = false
             isScrollGesturesEnabled = false
@@ -108,10 +100,10 @@ class MapHelper(private val activity: MapsActivity, val mMap: GoogleMap) :
 
     @SuppressLint("MissingPermission")
     private fun defreezeMap() {
-        activity.layout_show_subscribed.isEnabled = true
-        activity.layout_show_subscribed.isClickable = true
-        activity.layout_hide_closed.isEnabled = true
-        activity.layout_hide_closed.isClickable = true
+        activity.layout_favorites.isEnabled = true
+        activity.layout_open_now.isEnabled = true
+        activity.layout_favorites.isClickable = true
+        activity.layout_open_now.isClickable = true
         mMap.apply {
             if (EasyPermissions.hasPermissions(
                     activity,
@@ -140,12 +132,12 @@ class MapHelper(private val activity: MapsActivity, val mMap: GoogleMap) :
     }
 
     fun onShowOpenedClick() {
-        Firebase.analytics(activity).logClickShowOpenedOnly(!PrefsUtils.isOpenedFilter())
+        Firebase.analytics(activity).logClickShowOpenedOnly(!PrefsUtils.isOpenNowFilter())
         state.toogleOpened()
     }
 
     fun onShowSubscribedClick() {
-        Firebase.analytics(activity).logClickShowSubscribedOnly(!PrefsUtils.isSubsctiptionFilter())
+        Firebase.analytics(activity).logClickShowSubscribedOnly(!PrefsUtils.isFavoritesFilter())
         state.toogleSubscribed()
     }
 
@@ -166,14 +158,17 @@ class MapHelper(private val activity: MapsActivity, val mMap: GoogleMap) :
         val subscribedShops = state.shopsAll().filterSubscribed(subscriptions)
         activity.layout_footer_view.show()
         for (shop in shops) {
-            val position = shop.shopData.getLocation()
-            val iconBitmap = MapMarkerProvider(activity).buildMarkerViewAsync(
-                shop,
-                subscribedShops.contains(shop)
-            )
-            val icon = BitmapDescriptorFactory.fromBitmap(iconBitmap)
-            val markerOptions = MarkerOptions().position(position).icon(icon)
-            mMap.addMarker(markerOptions).apply { tag = shop.shopData.marketId }
+            try {
+                val position = shop.shopData.getLocation()
+                val markerProvider = MapMarkerProvider(activity)
+                val isSubscribed = subscribedShops.contains(shop)
+                val bitmap = markerProvider.buildMarkerViewAsync(shop, isSubscribed)
+                val icon = BitmapDescriptorFactory.fromBitmap(bitmap)
+                val markerOptions = MarkerOptions().position(position).icon(icon)
+                mMap.addMarker(markerOptions).apply { tag = shop.shopData.marketId }
+            } catch (e: Exception) {
+                logException(e, "Can't add marker")
+            }
             activity.layout_footer_view.removeAllViews()
         }
         activity.layout_footer_view.hide()
@@ -197,12 +192,6 @@ class MapHelper(private val activity: MapsActivity, val mMap: GoogleMap) :
                 override fun onFinish() {
                     mMap.setOnCameraIdleListener(this@MapHelper)
                     defreezeMap()
-                    Toasty.success(
-                        activity,
-                        activity.getString(R.string.location_found),
-                        LENGTH_LONG,
-                        true
-                    ).show()
                     if (callback != null) Timer().schedule(5000) {
                         CoroutineScope(Main).launch {
                             callback()

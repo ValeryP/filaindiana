@@ -6,9 +6,9 @@ import android.content.Context
 import android.content.Context.NOTIFICATION_SERVICE
 import android.content.Intent
 import com.filaindiana.data.AppDB
+import com.filaindiana.data.KEY_SUBSCRIPTONS_ID
 import com.filaindiana.data.SubscriptionRepository
 import com.filaindiana.utils.Firebase
-import com.filaindiana.utils.NotificationBuilder.KEY_SUBSCRIPTONS_ID
 import com.filaindiana.utils.NotificationBuilder.NOTIFICATION_ID
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO

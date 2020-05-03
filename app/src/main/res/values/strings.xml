@@ -6,8 +6,7 @@
     <string name="show_favorite_supermarkets">Showing only favorite supermarkets</string>
     <string name="show_open_supermarkets">Showing only open supermarkets</string>
     <string name="no_favorite_supermarkets">You don\'t have favorite supermarkets, showing all…</string>
-    <string name="looking_for_location">Looking for your location…</string>
-    <string name="location_found">Location successfully found</string>
+    <string name="looking_for_location">Looking for the location…</string>
     <string name="closed">Closed</string>
     <string name="report">Report</string>
     <string name="min">min</string>
@@ -44,4 +43,5 @@
     <string name="how_long_do_you_think_the_queue_will_last">How long do you think the queue will last?</string>
     <string name="report_sent">Your report has been sent and will be processed as soon as possible! ❤️</string>
     <string name="report_required">We don\'t know how many people are in a queue right now.\n\nIf you\'re in the queue, please send us a report 😘</string>
+    <string name="added">Added %1$s</string>
 </resources>

@@ -10,8 +10,8 @@ import com.filaindiana.utils.PrefsUtils
 data class ShopFilters(var isOnlyOpened: Boolean, var isSubscribed: Boolean) {
     companion object {
         fun defaultState() = ShopFilters(
-            isOnlyOpened = PrefsUtils.isOpenedFilter(),
-            isSubscribed = PrefsUtils.isSubsctiptionFilter()
+            isOnlyOpened = PrefsUtils.isOpenNowFilter(),
+            isSubscribed = PrefsUtils.isFavoritesFilter()
         )
     }
 }

@@ -13,6 +13,8 @@ import org.joda.time.format.DateTimeFormatter
  * Created on 24.04.2020
  */
 val timestampPattern: DateTimeFormatter = forPattern("yyyy-MM-dd HH:mm:ss")
+const val KEY_SUBSCRIPTON_LOCATION = "SUBSCRIPTON_LOCATION"
+const val KEY_SUBSCRIPTONS_ID = "SUBSCRIPTONS_ID"
 
 @Entity(tableName = "subscriptions")
 class Subscription(

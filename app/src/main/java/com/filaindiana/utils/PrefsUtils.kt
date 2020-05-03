@@ -34,10 +34,10 @@ object PrefsUtils {
         return Prefs.getString(userId, null)
     }
 
-    fun isSubsctiptionFilter() = Prefs.getBoolean(isSubsctiptionFilter, false)
+    fun isFavoritesFilter() = Prefs.getBoolean(isSubsctiptionFilter, false)
     fun setSubsctiptionFilter(value: Boolean) = Prefs.putBoolean(isSubsctiptionFilter, value)
 
-    fun isOpenedFilter() = Prefs.getBoolean(isOpenedFilter, false)
+    fun isOpenNowFilter() = Prefs.getBoolean(isOpenedFilter, false)
     fun setOpenedFilter(value: Boolean) = Prefs.putBoolean(isOpenedFilter, value)
 
     fun isOnboardingShownSubsctiptionFilter() =
