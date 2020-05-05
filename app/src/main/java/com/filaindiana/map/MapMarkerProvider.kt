@@ -38,16 +38,16 @@ class MapMarkerProvider(private val activity: MapsActivity) {
                     } else {
                         this.view_subscription.hide()
                     }
-                    if (shop.isReportingRequired()) {
-                        this.view_text_bg.setBackgroundResource(R.drawable.bg_rounded_blue)
-                        this.view_text_number.text = ""
-                        this.view_text_min.text = activity.getString(R.string.report)
-                    } else if (shop.shopShopState == null || !shop.shopData.isOpen) {
+                    if (!shop.isOpen()) {
                         this.view_text_bg.setBackgroundResource(R.drawable.bg_rounded_grey)
                         this.view_text_number.text = ""
                         this.view_text_min.text = activity.getString(R.string.closed)
-                    } else {
-                        this.view_text_bg.setBackgroundResource(shop.shopShopState.getStatusColor())
+                    } else if (shop.isReportingRequired()) {
+                        this.view_text_bg.setBackgroundResource(R.drawable.bg_rounded_blue)
+                        this.view_text_number.text = ""
+                        this.view_text_min.text = activity.getString(R.string.report)
+                    } else  {
+                        this.view_text_bg.setBackgroundResource(shop.shopShopState!!.getStatusColor())
                         this.view_text_min.text =
                             if (shop.shopShopState.queueWaitMinutes >= 0) activity.getString(R.string.min) else ""
                         this.view_text_number.text = shop.shopShopState.queueWaitMinutes.toString()

@@ -48,7 +48,7 @@ class NotificationWorker(appContext: Context, workerParams: WorkerParameters) :
             val shops = subscriptions.map { RestClient.getShops(it.lat, it.lng) }.flatten()
             val triggered = subscriptions.filter { subscription ->
                 val shop = shops.firstOrNull { it.shopData.marketId == subscription.shopId }
-                val isOpen = shop?.shopData?.isOpen ?: false
+                val isOpen = shop?.isOpen() ?: false
                 val isStateUpdated =
                     shop?.shopShopState?.getUpdateTime()?.isAfter(subscription.getTime()) ?: false
                 val hasSmallerQueue = (shop?.shopShopState?.queueWaitMinutes ?: Int.MAX_VALUE) <= 15

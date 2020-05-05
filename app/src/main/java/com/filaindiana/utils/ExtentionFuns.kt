@@ -48,7 +48,7 @@ val View.isVisible: Boolean
     get() = visibility == View.VISIBLE
 
 fun List<ShopsResponse.Shop>.filterOpen(): List<ShopsResponse.Shop> {
-    return this.filter { it.shopShopState != null && it.shopData.isOpen }
+    return this.filter { it.isOpen() }
 }
 
 fun List<ShopsResponse.Shop>.filterSubscribed(subscriptions: List<Subscription>): List<ShopsResponse.Shop> {

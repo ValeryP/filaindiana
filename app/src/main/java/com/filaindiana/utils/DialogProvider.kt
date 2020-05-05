@@ -74,7 +74,7 @@ object DialogProvider {
                             context.getString(R.string.report_required)
                         layout_dialogMarkerDetails_queue.textSize = 20F
                     }
-                    shop.shopData.isOpen -> {
+                    shop.isOpen() -> {
                         layout_dialogMarkerDetails_queue.text =
                             ctx.getString(R.string.queue, queueSizePeople, queueWaitMinutes)
                         layout_dialogMarkerDetails_queue.setTextColor(

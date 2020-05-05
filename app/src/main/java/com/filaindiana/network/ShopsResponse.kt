@@ -21,6 +21,7 @@ class ShopsResponse : ArrayList<ShopsResponse.Shop>() {
         val shopData: ShopData
     ) {
         fun isReportingRequired() = shopShopState == null
+        fun isOpen() = shopData.isOpen
 
         data class ShopState(
             @SerializedName("data_source")
