@@ -7,7 +7,7 @@
     android:background="?attr/selectableItemBackground">
 
     <ImageView
-        android:id="@+id/item_favorites_img"
+        android:id="@+id/item_favourites_img"
         android:layout_width="64dp"
         android:layout_height="64dp"
         android:layout_marginStart="16dp"
@@ -21,7 +21,7 @@
         tools:srcCompat="@drawable/iper" />
 
     <TextView
-        android:id="@+id/item_favorites_name"
+        android:id="@+id/item_favourites_name"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -31,29 +31,29 @@
         android:fontFamily="sans-serif-black"
         android:maxLines="2"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/item_favorites_img"
+        app:layout_constraintStart_toEndOf="@+id/item_favourites_img"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="Carrefor Carrefor Carrefor Carrefor " />
 
     <TextView
-        android:id="@+id/item_favorites_address"
+        android:id="@+id/item_favourites_address"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
         android:ellipsize="end"
         android:maxLines="1"
-        app:layout_constraintEnd_toEndOf="@+id/item_favorites_name"
-        app:layout_constraintStart_toStartOf="@+id/item_favorites_name"
-        app:layout_constraintTop_toBottomOf="@+id/item_favorites_name"
+        app:layout_constraintEnd_toEndOf="@+id/item_favourites_name"
+        app:layout_constraintStart_toStartOf="@+id/item_favourites_name"
+        app:layout_constraintTop_toBottomOf="@+id/item_favourites_name"
         tools:text="via atto vannucci, milano via atto vannucci, milano" />
 
     <TextView
-        android:id="@+id/item_favorites_details"
+        android:id="@+id/item_favourites_details"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
         android:textColor="@color/colorMarkerGreen"
-        app:layout_constraintStart_toStartOf="@+id/item_favorites_address"
-        app:layout_constraintTop_toBottomOf="@+id/item_favorites_address"
+        app:layout_constraintStart_toStartOf="@+id/item_favourites_address"
+        app:layout_constraintTop_toBottomOf="@+id/item_favourites_address"
         tools:text="2d ago" />
 </androidx.constraintlayout.widget.ConstraintLayout>

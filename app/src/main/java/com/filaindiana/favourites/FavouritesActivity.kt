@@ -1,4 +1,4 @@
-package com.filaindiana.favorites
+package com.filaindiana.favourites
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
@@ -10,24 +10,24 @@ import com.filaindiana.R
 import com.filaindiana.data.AppDB
 import com.filaindiana.data.SubscriptionRepository
 import com.filaindiana.network.RestClient
-import kotlinx.android.synthetic.main.activity_favorites.*
+import kotlinx.android.synthetic.main.activity_favourites.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.launch
 
 
-class FavoritesActivity : AppCompatActivity() {
+class FavouritesActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_favorites)
+        setContentView(R.layout.activity_favourites)
 
-        val favoritesAdapter = FavoritesAdapter()
+        val favoyritesAdapter = FavouritesAdapter()
         val linearLayoutManager = LinearLayoutManager(this)
-        favorites_recyclerView.apply {
+        favourites_recyclerView.apply {
             setHasFixedSize(true)
             layoutManager = linearLayoutManager
-            adapter = favoritesAdapter
+            adapter = favoyritesAdapter
             addItemDecoration(DividerItemDecoration(context, VERTICAL))
         }
         val subscriptions = AppDB.getDatabase(this).subscriptionDao().let {
@@ -35,11 +35,11 @@ class FavoritesActivity : AppCompatActivity() {
         }
         subscriptions.observe(this, Observer { list ->
             if (list.isNotEmpty()) {
-                favoritesAdapter.update(list)
+                favoyritesAdapter.update(list)
                 CoroutineScope(IO).launch {
                     val shops = list.map { RestClient.getShops(it.lat, it.lng) }.flatten()
                     CoroutineScope(Main).launch {
-                        favoritesAdapter.setShopsState(shops)
+                        favoyritesAdapter.setShopsState(shops)
                     }
                 }
             } else {

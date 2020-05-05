@@ -10,7 +10,7 @@ import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import com.filaindiana.R
 import com.filaindiana.data.KEY_SUBSCRIPTON_LOCATION
-import com.filaindiana.favorites.FavoritesActivity
+import com.filaindiana.favourites.FavouritesActivity
 import com.filaindiana.utils.*
 import com.filaindiana.worker.NotificationWorker
 import com.google.android.gms.maps.GoogleMap
@@ -64,7 +64,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, EasyPermissions.Pe
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_favorites -> {
-                val intent = Intent(this, FavoritesActivity::class.java)
+                val intent = Intent(this, FavouritesActivity::class.java)
                 startActivityForResult(intent, RC_FAVORITES)
                 true
             }
