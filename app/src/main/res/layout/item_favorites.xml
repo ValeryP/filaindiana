@@ -48,10 +48,11 @@
         tools:text="via atto vannucci, milano via atto vannucci, milano" />
 
     <TextView
-        android:id="@+id/item_favorites_time"
+        android:id="@+id/item_favorites_details"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
+        android:textColor="@color/colorMarkerGreen"
         app:layout_constraintStart_toStartOf="@+id/item_favorites_address"
         app:layout_constraintTop_toBottomOf="@+id/item_favorites_address"
         tools:text="2d ago" />

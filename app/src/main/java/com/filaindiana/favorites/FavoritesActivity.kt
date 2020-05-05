@@ -9,7 +9,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.filaindiana.R
 import com.filaindiana.data.AppDB
 import com.filaindiana.data.SubscriptionRepository
+import com.filaindiana.network.RestClient
 import kotlinx.android.synthetic.main.activity_favorites.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.Dispatchers.Main
+import kotlinx.coroutines.launch
 
 
 class FavoritesActivity : AppCompatActivity() {
@@ -28,9 +33,15 @@ class FavoritesActivity : AppCompatActivity() {
         val subscriptions = AppDB.getDatabase(this).subscriptionDao().let {
             SubscriptionRepository.getInstance(it).getSubscriptions()
         }
-        subscriptions.observe(this, Observer {
-            if (it.isNotEmpty()) {
-                favoritesAdapter.update(it)
+        subscriptions.observe(this, Observer { list ->
+            if (list.isNotEmpty()) {
+                favoritesAdapter.update(list)
+                CoroutineScope(IO).launch {
+                    val shops = list.map { RestClient.getShops(it.lat, it.lng) }.flatten()
+                    CoroutineScope(Main).launch {
+                        favoritesAdapter.setShopsState(shops)
+                    }
+                }
             } else {
                 finish()
             }

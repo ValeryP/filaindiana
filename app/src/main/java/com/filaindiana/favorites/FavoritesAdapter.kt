@@ -1,8 +1,8 @@
 package com.filaindiana.favorites
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
-import android.text.format.DateUtils
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,10 +12,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.filaindiana.R
 import com.filaindiana.data.KEY_SUBSCRIPTON_LOCATION
 import com.filaindiana.data.Subscription
+import com.filaindiana.network.ShopsResponse
 import com.filaindiana.utils.GraphicsProvider
 import com.filaindiana.utils.logDebug
 import kotlinx.android.synthetic.main.item_favorites.view.*
-import org.joda.time.DateTime
 
 
 /*
@@ -26,11 +26,13 @@ import org.joda.time.DateTime
 class FavoritesAdapter(private val data: MutableList<Subscription> = mutableListOf()) :
     RecyclerView.Adapter<FavoritesAdapter.FavoritesViewHolder>() {
 
+    private var state = mutableMapOf<String, ShopsResponse.Shop>()
+
     class FavoritesViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val img: ImageView = view.item_favorites_img
         val name: TextView = view.item_favorites_name
         val address: TextView = view.item_favorites_address
-        val time: TextView = view.item_favorites_time
+        val time: TextView = view.item_favorites_details
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FavoritesViewHolder {
@@ -39,19 +41,26 @@ class FavoritesAdapter(private val data: MutableList<Subscription> = mutableList
         return FavoritesViewHolder(view)
     }
 
+    @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(holder: FavoritesViewHolder, position: Int) {
         val subscription = data[position]
         holder.img.setImageResource(GraphicsProvider.getShopImgResId(subscription.shopBrand))
         holder.name.text = subscription.shopName
         holder.address.text = subscription.shopAddress
-        holder.time.text = holder.itemView.context.getString(
-            R.string.added,
-            DateUtils.getRelativeTimeSpanString(
-                subscription.getTime().millis,
-                DateTime.now().millis,
-                DateUtils.MINUTE_IN_MILLIS
-            ).toString()
-        )
+        val shop = state[subscription.shopId]
+        val lastUpdate = shop?.shopShopState?.getLastUpdate()
+        if (shop == null || lastUpdate == null) {
+            holder.time.text = ""
+        } else {
+            val queueSizePeople = shop.shopShopState.queueSizePeople
+            val queueWaitMinutes = shop.shopShopState.queueWaitMinutes
+            val queue = holder.itemView.resources.getString(
+                R.string.queue,
+                queueSizePeople,
+                queueWaitMinutes
+            )
+            holder.time.text = "$queue ~ $lastUpdate"
+        }
 
         val item = data.getOrNull(position)
         holder.itemView.setOnClickListener {
@@ -73,6 +82,11 @@ class FavoritesAdapter(private val data: MutableList<Subscription> = mutableList
     fun update(newData: List<Subscription>) {
         data.clear()
         data.addAll(newData)
+        notifyDataSetChanged()
+    }
+
+    fun setShopsState(states: List<ShopsResponse.Shop>) {
+        states.forEach { shop -> state[shop.shopData.marketId] = shop }
         notifyDataSetChanged()
     }
 }

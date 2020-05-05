@@ -7,8 +7,10 @@ import androidx.work.*
 import androidx.work.ExistingPeriodicWorkPolicy.REPLACE
 import androidx.work.NetworkType.CONNECTED
 import com.filaindiana.data.AppDB
+import com.filaindiana.data.Subscription
 import com.filaindiana.data.SubscriptionRepository
 import com.filaindiana.network.RestClient
+import com.filaindiana.network.ShopsResponse
 import com.filaindiana.utils.Firebase
 import com.filaindiana.utils.NotificationBuilder
 import com.filaindiana.utils.logInfo
@@ -46,20 +48,29 @@ class NotificationWorker(appContext: Context, workerParams: WorkerParameters) :
         return try {
             val subscriptions = repo.getSubscriptionsSync()
             val shops = subscriptions.map { RestClient.getShops(it.lat, it.lng) }.flatten()
-            val triggered = subscriptions.filter { subscription ->
-                val shop = shops.firstOrNull { it.shopData.marketId == subscription.shopId }
-                val isOpen = shop?.isOpen() ?: false
-                val isStateUpdated =
-                    shop?.shopShopState?.getUpdateTime()?.isAfter(subscription.getTime()) ?: false
-                val hasSmallerQueue = (shop?.shopShopState?.queueWaitMinutes ?: Int.MAX_VALUE) <= 15
-                isOpen && isStateUpdated && hasSmallerQueue
-            }
+            val triggered = filterTriggeredOnly(subscriptions, shops)
+
             logInfo { "${subscriptions.size} subscription, ${shops.size} shops, ${triggered.size} alerts" }
+
             NotificationBuilder.showNotification(triggered, applicationContext)
             Firebase.analytics(this.applicationContext).logWorkerNotificationTriggered(triggered)
             Result.success()
         } catch (e: Exception) {
             Result.failure()
+        }
+    }
+
+    private fun filterTriggeredOnly(
+        subscriptionsAll: List<Subscription>,
+        shopsAll: List<ShopsResponse.Shop>
+    ): List<Subscription> {
+        return subscriptionsAll.filter { subscription ->
+            val shop = shopsAll.firstOrNull { it.shopData.marketId == subscription.shopId }
+            val isOpen = shop?.isOpen() ?: false
+            val isStateUpdated =
+                shop?.shopShopState?.getUpdateTime()?.isAfter(subscription.getTime()) ?: false
+            val hasSmallerQueue = (shop?.shopShopState?.queueWaitMinutes ?: Int.MAX_VALUE) <= 15
+            isOpen && isStateUpdated && hasSmallerQueue
         }
     }
 
