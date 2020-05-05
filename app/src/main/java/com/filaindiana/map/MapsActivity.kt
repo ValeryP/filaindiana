@@ -161,7 +161,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, EasyPermissions.Pe
                 layout_filters_container.show()
                 setupOpenNowSwitch()
                 setupFavoritesButton()
-                OnboardingManager.startOnlyClosedOnboarding(this@MapsActivity)
+                OnboardingManager.startOpenNowOnboarding(this@MapsActivity)
             }
         }
     }

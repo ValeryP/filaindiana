@@ -14,7 +14,7 @@ import kotlinx.android.synthetic.main.activity_maps.*
  * Created on 26.04.2020
  */
 object OnboardingManager {
-    fun startOnlyClosedOnboarding(a: MapsActivity) {
+    fun startOpenNowOnboarding(a: MapsActivity) {
         val onlyOpened = a.getString(R.string.open_now)
         SpotlightView.Builder(a)
             .setConfiguration(config(a))
@@ -25,7 +25,7 @@ object OnboardingManager {
             .show()
     }
 
-    fun startOnlySubscribtionOnboarding(a: MapsActivity) {
+    fun startFavouritesOnboarding(a: MapsActivity) {
         val onlySubscribed = a.getString(R.string.show_favorites)
         SpotlightView.Builder(a)
             .setConfiguration(config(a))

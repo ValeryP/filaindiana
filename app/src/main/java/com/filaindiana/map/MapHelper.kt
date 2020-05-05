@@ -78,8 +78,8 @@ class MapHelper(private val activity: MapsActivity, val mMap: GoogleMap) :
                 addShopsOnTheMap(points, subscriptions)
                 val isSubscribtionsVisible = points.filterSubscribed(subscriptions).isNotEmpty()
                 if (isSubscribtionsVisible) {
-                    OnboardingManager.startOnlySubscribtionOnboarding(activity)
                     activity.layout_favorites.show()
+                    OnboardingManager.startFavouritesOnboarding(activity)
                 } else {
                     activity.layout_favorites.hide()
                 }
