@@ -36,6 +36,14 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, EasyPermissions.Pe
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        supportActionBar?.apply {
+            setDisplayShowTitleEnabled(true)
+            setDisplayShowHomeEnabled(true)
+            setIcon(R.drawable.ic_notification)
+            title = "\t$title"
+        }
+
         subscriptionLocation = intent?.extras?.getParcelable(KEY_SUBSCRIPTON_LOCATION)
         logDebug { "onCreate: $subscriptionLocation" }
         setContentView(R.layout.activity_maps)

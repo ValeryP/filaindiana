@@ -10,6 +10,7 @@ import com.filaindiana.R
 import com.filaindiana.data.AppDB
 import com.filaindiana.data.SubscriptionRepository
 import com.filaindiana.network.RestClient
+import com.filaindiana.utils.GraphicsProvider
 import kotlinx.android.synthetic.main.activity_favourites.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
@@ -21,6 +22,19 @@ class FavouritesActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_favourites)
+
+        supportActionBar?.apply {
+            setDisplayShowTitleEnabled(true)
+            setDisplayShowHomeEnabled(true)
+            setIcon(
+                GraphicsProvider.getColoredIcon(
+                    this@FavouritesActivity,
+                    R.drawable.ic_stars_24px,
+                    R.color.colorTextWhite
+                )
+            )
+            title = "\t${getString(R.string.favorites)}"
+        }
 
         val favoyritesAdapter = FavouritesAdapter()
         val linearLayoutManager = LinearLayoutManager(this)
