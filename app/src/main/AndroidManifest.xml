@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.filaindiana">
+    package="com.codaliscia">
 
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
@@ -10,7 +10,7 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <application
-        android:name=".App"
+        android:name="com.codaliscia.App"
         android:allowBackup="true"
         android:fullBackupContent="true"
         android:icon="@mipmap/ic_launcher"
@@ -19,9 +19,9 @@
         android:supportsRtl="false"
         android:theme="@style/AppTheme"
         tools:replace="android:supportsRtl">
-        <activity android:name=".favourites.FavouritesActivity" />
+        <activity android:name="com.codaliscia.favourites.FavouritesActivity" />
         <activity
-            android:name=".map.MapsActivity"
+            android:name="com.codaliscia.map.MapsActivity"
             android:label="@string/app_name"
             android:launchMode="singleTop"
             android:screenOrientation="portrait"
@@ -33,7 +33,7 @@
             </intent-filter>
         </activity>
 
-        <receiver android:name=".worker.UnsubscribeActionReceiver" />
+        <receiver android:name="com.codaliscia.worker.UnsubscribeActionReceiver" />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"

@@ -8,6 +8,80 @@
   "client": [
     {
       "client_info": {
+        "mobilesdk_app_id": "1:295172027083:android:06f6572298e0e8f591a14e",
+        "android_client_info": {
+          "package_name": "com.codaliscia"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "295172027083-21nieflnb1llbarj39pji78gtblihl81.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.codaliscia",
+            "certificate_hash": "a11869b8c14ec1036e388b215c488fba32627b7e"
+          }
+        },
+        {
+          "client_id": "295172027083-cfcn3d820tpr4hrvnjabtk9jhe3e1t7r.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCu7xUJPiF_7Vx3ew_pwJpl6UC9J4w9R6w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "295172027083-cfcn3d820tpr4hrvnjabtk9jhe3e1t7r.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:295172027083:android:8ffdd71696f4bcf491a14e",
+        "android_client_info": {
+          "package_name": "com.codaliscia.dev"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "295172027083-fvpl4q98me3u0eurosd2b10763jcrdd0.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.codaliscia.dev",
+            "certificate_hash": "0c791656a4d30fb3108b7b45ddf93c12a6a5191f"
+          }
+        },
+        {
+          "client_id": "295172027083-cfcn3d820tpr4hrvnjabtk9jhe3e1t7r.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCu7xUJPiF_7Vx3ew_pwJpl6UC9J4w9R6w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "295172027083-cfcn3d820tpr4hrvnjabtk9jhe3e1t7r.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
         "mobilesdk_app_id": "1:295172027083:android:1f1fdf5e1c9175a291a14e",
         "android_client_info": {
           "package_name": "com.filaindiana"
