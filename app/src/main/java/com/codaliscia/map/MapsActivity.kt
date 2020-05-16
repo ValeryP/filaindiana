@@ -45,7 +45,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, EasyPermissions.Pe
         }
 
         subscriptionLocation = intent?.extras?.getParcelable(KEY_SUBSCRIPTON_LOCATION)
-        logDebug { "onCreate: $subscriptionLocation" }
+        logInfo { "onCreate: $subscriptionLocation" }
         setContentView(R.layout.activity_maps)
         NotificationWorker.enqueue(this)
         (supportFragmentManager.findFragmentById(R.id.layout_map) as SupportMapFragment)
@@ -55,8 +55,14 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, EasyPermissions.Pe
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
         subscriptionLocation = intent?.extras?.getParcelable(KEY_SUBSCRIPTON_LOCATION)
-        logDebug { "onNewIntent: $subscriptionLocation" }
-        askLocationPermissions()
+        logInfo { "onNewIntent: $subscriptionLocation" }
+        if (::mapHelper.isInitialized) {
+            askLocationPermissions()
+        } else {
+            logInfo { "isInitialized == false" }
+            (supportFragmentManager.findFragmentById(R.id.layout_map) as SupportMapFragment)
+                .getMapAsync(this)
+        }
     }
 
     fun invalidateMenu(shouldShowMenu: Boolean) {
@@ -130,7 +136,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, EasyPermissions.Pe
             RC_FAVORITES -> {
                 subscriptionLocation = data?.extras?.getParcelable(KEY_SUBSCRIPTON_LOCATION)
                 if (subscriptionLocation != null) {
-                    logDebug { "onActivityResult: $subscriptionLocation" }
+                    logInfo { "onActivityResult: $subscriptionLocation" }
                     askLocationPermissions()
                 }
             }

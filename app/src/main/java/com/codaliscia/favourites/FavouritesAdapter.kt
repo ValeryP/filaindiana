@@ -14,7 +14,7 @@ import com.codaliscia.data.KEY_SUBSCRIPTON_LOCATION
 import com.codaliscia.data.Subscription
 import com.codaliscia.network.ShopsResponse
 import com.codaliscia.utils.GraphicsProvider
-import com.codaliscia.utils.logDebug
+import com.codaliscia.utils.logInfo
 import kotlinx.android.synthetic.main.item_favourites.view.*
 
 
@@ -64,9 +64,9 @@ class FavouritesAdapter(private val data: MutableList<Subscription> = mutableLis
 
         val item = data.getOrNull(position)
         holder.itemView.setOnClickListener {
-            logDebug { "Item: $position" }
+            logInfo { "Item: $position" }
             item?.let {
-                logDebug { "Item: $it" }
+                logInfo { "Item: $it" }
                 (holder.itemView.context as FavouritesActivity).apply {
                     setResult(Activity.RESULT_OK, Intent().apply {
                         putExtra(KEY_SUBSCRIPTON_LOCATION, item.getLocation())

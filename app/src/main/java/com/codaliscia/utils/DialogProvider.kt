@@ -178,7 +178,7 @@ object DialogProvider {
                                     seekParams.progress
                                 )
                             )
-                            logDebug { seekParams.progress.toString() }
+                            logInfo { seekParams.progress.toString() }
                         }
 
                         override fun onStartTrackingTouch(seekBar: IndicatorSeekBar?) {}
@@ -194,7 +194,7 @@ object DialogProvider {
                 layout_dialogReport_queueTimeSeekbar.onSeekChangeListener =
                     object : OnSeekChangeListener {
                         override fun onSeeking(seekParams: SeekParams) {
-                            logDebug { seekParams.progress.toString() }
+                            logInfo { seekParams.progress.toString() }
                         }
 
                         override fun onStartTrackingTouch(seekBar: IndicatorSeekBar?) {}
@@ -205,7 +205,7 @@ object DialogProvider {
                         }
                     }
                 layout_dialogReport_button_report.setOnClickListener {
-                    logDebug { "Click: send report" }
+                    logInfo { "Click: send report" }
                     val lastLocation = SmartLocation.with(context)
                         .location().lastLocation.let { LatLng(it!!.latitude, it.longitude) }
                     val shopId = shop.shopData.marketId

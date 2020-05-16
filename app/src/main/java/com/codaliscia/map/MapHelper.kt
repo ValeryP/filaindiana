@@ -125,7 +125,7 @@ class MapHelper(private val activity: MapsActivity, val mMap: GoogleMap) :
     }
 
     fun startLocationSearch(callback: ((location: LatLng) -> Unit)? = null) {
-        logDebug { "SmartLocation.with()" }
+        logInfo { "SmartLocation.with()" }
         val isGpsEnabled = SmartLocation.with(activity).location().state().isGpsAvailable
         if (isGpsEnabled) {
             launchSmartLocator(callback)
@@ -187,7 +187,7 @@ class MapHelper(private val activity: MapsActivity, val mMap: GoogleMap) :
         SmartLocation.with(activity).location().apply { config(LocationParams.NAVIGATION) }.oneFix()
             .start {
                 val userLocation = LatLng(it.latitude, it.longitude)
-                logDebug { "Location: $userLocation" }
+                logInfo { "Location: $userLocation" }
                 callback?.invoke(userLocation)
             }
     }
