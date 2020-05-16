@@ -158,21 +158,25 @@ class MapHelper(private val activity: MapsActivity, val mMap: GoogleMap) :
     }
 
     private suspend fun addShopsOnTheMap(shops: List<Shop>, subscriptions: List<Subscription>) {
-        val subscribedShops = state.shopsAll().filterSubscribed(subscriptions)
+        val subscribedShops = state.shopsAll().filterSubscribed(subscriptions).toList()
         activity.layout_footer_view.show()
-        for (shop in shops) {
-            try {
-                val position = shop.shopData.getLocation()
-                val markerProvider = MapMarkerProvider(activity)
-                val isSubscribed = subscribedShops.contains(shop)
-                val bitmap = markerProvider.buildMarkerViewAsync(shop, isSubscribed)
-                val icon = BitmapDescriptorFactory.fromBitmap(bitmap)
-                val markerOptions = MarkerOptions().position(position).icon(icon)
-                mMap.addMarker(markerOptions).apply { tag = shop.shopData.marketId }
-            } catch (e: Exception) {
-                logException(e, "Can't add marker")
+        try {
+            for (shop in shops) {
+                try {
+                    val position = shop.shopData.getLocation()
+                    val markerProvider = MapMarkerProvider(activity)
+                    val isSubscribed = subscribedShops.contains(shop)
+                    val bitmap = markerProvider.buildMarkerViewAsync(shop, isSubscribed)
+                    val icon = BitmapDescriptorFactory.fromBitmap(bitmap)
+                    val markerOptions = MarkerOptions().position(position).icon(icon)
+                    mMap.addMarker(markerOptions).apply { tag = shop.shopData.marketId }
+                } catch (e: Exception) {
+                    logException(e, "Can't add marker, skip")
+                }
+                activity.layout_footer_view.removeAllViews()
             }
-            activity.layout_footer_view.removeAllViews()
+        } catch (e: ConcurrentModificationException) {
+            logException(e, "Concurrent list modification")
         }
         activity.layout_footer_view.hide()
     }
