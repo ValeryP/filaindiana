@@ -21,7 +21,7 @@ import com.google.maps.android.SphericalUtil
 class MapState {
     private lateinit var subscriptions: List<Subscription>
 
-    private var allShops: MutableList<Shop> = mutableListOf()
+    private var allShops: MutableList<Shop>? = null
     private val fetchedLocations: MutableMap<LatLng, List<Shop>> = mutableMapOf()
 
     val filters = MutableLiveData<ShopFilters>().default(ShopFilters.defaultState())
@@ -32,7 +32,7 @@ class MapState {
         this.shopsFiltered.value = shopsFiltered()
     }
 
-    fun shopsAll(): List<Shop> = allShops
+    fun shopsAll(): MutableList<Shop>? = allShops
 
     fun toogleOpened() {
         val isOnlyOpenedNew = !this.filters.value!!.isOnlyOpened
@@ -64,18 +64,21 @@ class MapState {
     }
 
     private fun addShops(shops: List<Shop>) {
-        this.allShops.addAll(shops)
+        if (this.allShops == null) this.allShops = mutableListOf()
+        this.allShops?.addAll(shops)
         this.shopsFiltered.value = shopsFiltered()
     }
 
     private fun shopsFiltered(): List<Shop> {
-        var shops = shopsAll()
-        if (filters.value!!.isOnlyOpened) {
-            shops = shops.filterOpen()
-        }
-        if (filters.value!!.isSubscribed && ::subscriptions.isInitialized) {
-            shops = shops.filterSubscribed(subscriptions)
-        }
-        return shops
+        return shopsAll()?.let {
+            var result = it.toMutableList()
+            if (filters.value!!.isOnlyOpened) {
+                result = result.filterOpen().toMutableList()
+            }
+            if (filters.value!!.isSubscribed && ::subscriptions.isInitialized) {
+                result = result.filterSubscribed(subscriptions).toMutableList()
+            }
+            result
+        }?.toList() ?: emptyList()
     }
 }

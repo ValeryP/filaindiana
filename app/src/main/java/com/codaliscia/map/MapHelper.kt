@@ -51,7 +51,11 @@ class MapHelper(private val activity: MapsActivity, val mMap: GoogleMap) :
             activity.invalidateMenu(it.isNotEmpty())
             state.setSubscriptions(it)
         })
-        state.shopsFiltered.observe(activity, Observer { shops -> invalidateMap(shops) })
+        state.shopsFiltered.observe(activity, Observer { shops ->
+            CoroutineScope(Main).launch {
+                invalidateMap(shops)
+            }
+        })
         state.filters.observe(activity, Observer { invalidateViews(it) })
     }
 
@@ -66,21 +70,41 @@ class MapHelper(private val activity: MapsActivity, val mMap: GoogleMap) :
         }
     }
 
-    private fun invalidateMap(points: List<Shop>) {
-        if (points.isEmpty() && state.shopsAll().isNotEmpty()) {
-            Timer().schedule(1000) { CoroutineScope(Main).launch { state.toogleSubscribed() } }
-        } else {
-            CoroutineScope(Main).launch {
-                mMap.clear()
+    private suspend fun invalidateMap(pointsToShow: List<Shop>) {
+        val pointsAll = state.shopsAll()
+        if (pointsAll != null) {
+            val pointsOpen = pointsAll.filterOpen()
+            val subscriptions = repo.getSubscriptionsSync()
+            val pointsSubscribed = pointsToShow.filterSubscribed(subscriptions)
+            val isShowOpenActive = PrefsUtils.isOpenNowFilter()
+            val isShowSubscribtionsActive = PrefsUtils.isFavoritesFilter()
+            if (pointsToShow.isEmpty() && pointsAll.isEmpty()) {
+                Toasty.info(activity, activity.getString(R.string.no_shops)).show()
+            } else if (pointsToShow.isEmpty() && pointsAll.isNotEmpty()) {
+                Timer().schedule(1000) {
+                    CoroutineScope(Main).launch {
+                        if (isShowSubscribtionsActive) {
+                            state.toogleSubscribed()
+                        } else if (isShowOpenActive) {
+                            state.toogleOpened()
+                        }
+                    }
+                }
+            } else {
                 freezeMap()
-                val subscriptions = repo.getSubscriptionsSync()
-                addShopsOnTheMap(points, subscriptions)
-                val isSubscribtionsVisible = points.filterSubscribed(subscriptions).isNotEmpty()
-                if (isSubscribtionsVisible) {
+                mMap.clear()
+                addShopsOnTheMap(pointsToShow, subscriptions)
+                if (pointsSubscribed.isNotEmpty()) {
                     activity.layout_favorites.show()
                     OnboardingManager.startFavouritesOnboarding(activity)
                 } else {
                     activity.layout_favorites.hide()
+                }
+                val isOpenVisible = pointsOpen.isNotEmpty()
+                if (isOpenVisible) {
+                    activity.layout_open_now.show()
+                } else {
+                    activity.layout_open_now.hide()
                 }
                 defreezeMap()
             }
@@ -157,14 +181,14 @@ class MapHelper(private val activity: MapsActivity, val mMap: GoogleMap) :
     }
 
     private suspend fun addShopsOnTheMap(shops: List<Shop>, subscriptions: List<Subscription>) {
-        val subscribedShops = state.shopsAll().filterSubscribed(subscriptions).toList()
+        val subscribedShops = state.shopsAll()?.filterSubscribed(subscriptions)?.toList()
         activity.layout_footer_view.show()
         try {
             for (shop in shops) {
                 try {
                     val position = shop.shopData.getLocation()
                     val markerProvider = MapMarkerProvider(activity)
-                    val isSubscribed = subscribedShops.contains(shop)
+                    val isSubscribed = subscribedShops?.contains(shop) ?: false
                     val bitmap = markerProvider.buildMarkerViewAsync(shop, isSubscribed)
                     val icon = BitmapDescriptorFactory.fromBitmap(bitmap)
                     val markerOptions = MarkerOptions().position(position).icon(icon)
@@ -213,7 +237,7 @@ class MapHelper(private val activity: MapsActivity, val mMap: GoogleMap) :
     override fun onMarkerClick(marker: Marker?): Boolean {
         marker?.let { it ->
             val shopId = it.tag.toString()
-            val shop = state.shopsAll().firstOrNull { item -> item.shopData.marketId == shopId }
+            val shop = state.shopsAll()?.firstOrNull { item -> item.shopData.marketId == shopId }
             shop?.let {
                 val name = shop.shopData.name
                 val address = "${shop.shopData.address}, ${shop.shopData.city}"

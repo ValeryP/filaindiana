@@ -39,6 +39,7 @@
     <string name="how_many_people_are_there_in_the_queue">Quante persone sono in fila?</string>
     <string name="how_long_do_you_think_the_queue_will_last">Quanti minuti pensi che la fila duri?</string>
     <string name="report_sent">La tua segnalazione è stata inviata e verrà elaborata il prima possibile! ❤</string>
-    <string name="report_required">Non sappiamo quante persone sono in fila in questo momento.</string>
+    <string name="report_required">Non sappiamo quante persone sono in fila in questo momento</string>
     <string name="added">Aggiunto %1$s</string>
+    <string name="no_shops">Siamo spiacenti, non abbiamo supermercati nella tua zona per ora</string>
 </resources>

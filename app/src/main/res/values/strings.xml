@@ -5,6 +5,7 @@
     <string name="open_now">Open now</string>
     <string name="show_favorite_supermarkets">Showing only favorite supermarkets</string>
     <string name="show_open_supermarkets">Showing only open supermarkets</string>
+    <string name="no_shops">Sorry, we don\'t have supermarkets in your area for now</string>
     <string name="looking_for_location">Looking for the location…</string>
     <string name="closed">Closed</string>
     <string name="report">Report</string>
@@ -26,7 +27,7 @@
     <string name="favorites">Favorites</string>
     <string name="unfavorite">Remove from favorites</string>
     <string name="add_to_favorites">Add to Favorites</string>
-    <string name="subscribed_details">You\'re subscribed for the updates.</string>
+    <string name="subscribed_details">You\'re subscribed for the updates</string>
     <string name="removed">Removed</string>
     <string name="no_updates">"You will not longer receive the updates for %1$s"</string>
     <string name="requires_location_permission_details">The app requires location permission to find closest supermarkets. Click "Enable" to open an application settings screen and grant permissions.</string>
@@ -41,6 +42,6 @@
     <string name="how_many_people_are_there_in_the_queue">How many people are there in the queue?</string>
     <string name="how_long_do_you_think_the_queue_will_last">How long do you think the queue will last?</string>
     <string name="report_sent">Your report has been sent and will be processed as soon as possible! ❤️</string>
-    <string name="report_required">We don\'t know how many people are in a queue right now.</string>
+    <string name="report_required">We don\'t know how many people are in a queue right now</string>
     <string name="added">Added %1$s</string>
 </resources>
