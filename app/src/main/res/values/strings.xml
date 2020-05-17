@@ -26,7 +26,7 @@
     <string name="favorites">Favorites</string>
     <string name="unfavorite">Remove from favorites</string>
     <string name="add_to_favorites">Add to Favorites</string>
-    <string name="subscribed_details">You\'re subscribed for the updates. We\'ll notify you once the queue waiting time become less than 15 min.</string>
+    <string name="subscribed_details">You\'re subscribed for the updates.</string>
     <string name="removed">Removed</string>
     <string name="no_updates">"You will not longer receive the updates for %1$s"</string>
     <string name="requires_location_permission_details">The app requires location permission to find closest supermarkets. Click "Enable" to open an application settings screen and grant permissions.</string>

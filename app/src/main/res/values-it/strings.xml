@@ -24,7 +24,7 @@
     <string name="favorites">Preferiti</string>
     <string name="unfavorite">Rimuovi da Preferiti</string>
     <string name="add_to_favorites">Aggiungi a Preferiti</string>
-    <string name="subscribed_details">Ora riceverai una notifica quando in questo supermercato ci sarà una fila inferiore a 15 min.</string>
+    <string name="subscribed_details">Ora riceverai una notifica (una fila inferiore a 15 min)</string>
     <string name="removed">Rimosso</string>
     <string name="no_updates">"Non riceverai più gli aggiornamenti per %1$s"</string>
     <string name="requires_location_permission_details">L\'app richiede l\'accesso alla tua posizione per trovare i supermercati più vicini. Clicca su \"Attiva\" per aprire la schermata delle Impostazioni dell\'app e concedere l\'autorizzazione.</string>
