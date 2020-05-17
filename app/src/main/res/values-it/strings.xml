@@ -3,8 +3,6 @@
     <string name="open_now">Aperti adesso</string>
     <string name="show_favorite_supermarkets">Stai vedendo solo i supermercati Preferiti</string>
     <string name="show_open_supermarkets">Stai vedendo solo per i supermercati aperti</string>
-    <string name="no_favorite_supermarkets">Non abbiamo trovato nessun supermercato Preferito.
-Te li mostriamo tutti..</string>
     <string name="looking_for_location">Ricerca della posizione…</string>
     <string name="closed">Chiuso</string>
     <string name="report">Segnala</string>

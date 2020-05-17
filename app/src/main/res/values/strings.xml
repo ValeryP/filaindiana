@@ -5,7 +5,6 @@
     <string name="open_now">Open now</string>
     <string name="show_favorite_supermarkets">Showing only favorite supermarkets</string>
     <string name="show_open_supermarkets">Showing only open supermarkets</string>
-    <string name="no_favorite_supermarkets">You don\'t have favorite supermarkets, showing all…</string>
     <string name="looking_for_location">Looking for the location…</string>
     <string name="closed">Closed</string>
     <string name="report">Report</string>

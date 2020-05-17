@@ -68,7 +68,6 @@ class MapHelper(private val activity: MapsActivity, val mMap: GoogleMap) :
 
     private fun invalidateMap(points: List<Shop>) {
         if (points.isEmpty() && state.shopsAll().isNotEmpty()) {
-            Toasty.warning(activity, activity.getString(R.string.no_favorite_supermarkets)).show()
             Timer().schedule(1000) { CoroutineScope(Main).launch { state.toogleSubscribed() } }
         } else {
             CoroutineScope(Main).launch {
