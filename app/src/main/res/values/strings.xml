@@ -41,6 +41,6 @@
     <string name="how_many_people_are_there_in_the_queue">How many people are there in the queue?</string>
     <string name="how_long_do_you_think_the_queue_will_last">How long do you think the queue will last?</string>
     <string name="report_sent">Your report has been sent and will be processed as soon as possible! ❤️</string>
-    <string name="report_required">We don\'t know how many people are in a queue right now.\n\nIf you\'re in the queue, please send us a report 😘</string>
+    <string name="report_required">We don\'t know how many people are in a queue right now.</string>
     <string name="added">Added %1$s</string>
 </resources>
