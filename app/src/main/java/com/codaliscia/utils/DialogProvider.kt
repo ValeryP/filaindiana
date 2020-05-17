@@ -110,15 +110,22 @@ object DialogProvider {
                     layout_dialogMarkerDetails_button_subscribe.background.setColorFilter(
                         ResourcesCompat.getColor(
                             ctx.resources,
-                            R.color.colorButtonGrey,
+                            R.color.colorButtonLightGrey,
                             null
                         ), MULTIPLY
+                    )
+                    layout_dialogMarkerDetails_button_subscribe.setTextColor(
+                        ResourcesCompat.getColor(
+                            ctx.resources,
+                            R.color.colorTextDark,
+                            null
+                        )
                     )
                     layout_dialogMarkerDetails_button_subscribe.setCompoundDrawablesWithIntrinsicBounds(
                         GraphicsProvider.getColoredIcon(
                             ctx,
                             R.drawable.ic_star_outline_24px,
-                            R.color.colorTextWhite
+                            R.color.colorTextDark
                         ),
                         null,
                         null,
@@ -134,6 +141,13 @@ object DialogProvider {
                             R.color.colorAccent,
                             null
                         ), MULTIPLY
+                    )
+                    layout_dialogMarkerDetails_button_subscribe.setTextColor(
+                        ResourcesCompat.getColor(
+                            ctx.resources,
+                            R.color.colorTextWhite,
+                            null
+                        )
                     )
                     layout_dialogMarkerDetails_button_subscribe.setCompoundDrawablesWithIntrinsicBounds(
                         GraphicsProvider.getColoredIcon(

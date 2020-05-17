@@ -12,6 +12,7 @@
     <color name="colorMarkerGold">#ffab00</color>
 
     <color name="colorButtonGrey">#78909c</color>
+    <color name="colorButtonLightGrey">#eceff1</color>
 
     <color name="colorTextWhite">#FFF</color>
     <color name="colorTextBlack">#263238</color>

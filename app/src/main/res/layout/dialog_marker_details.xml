@@ -114,6 +114,8 @@
         android:layout_marginStart="32dp"
         android:layout_marginEnd="32dp"
         android:backgroundTint="@color/colorAccent"
+        tools:backgroundTint="#cfd8dc"
+        tools:textColor="#263238"
         android:minWidth="150dp"
         android:paddingStart="32dp"
         android:paddingEnd="32dp"
