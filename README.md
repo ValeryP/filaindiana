@@ -22,25 +22,25 @@ alt="Download from Google Play" height="80">](https://play.google.com/store/apps
 ### 1. Show real-time waiting times at each supermarket
 
 <p float="left">
-    <img src="https://github.com/ValeryP/filaindiana/blob/dev/app/publish/github/1.gif" width="294px">
-    <img src="https://github.com/ValeryP/filaindiana/blob/dev/app/publish/github/1-1.png"  width="296px">
-    <img src="https://github.com/ValeryP/filaindiana/blob/dev/app/publish/github/1-2.png"  width="296px">
+    <img src="https://github.com/ValeryP/filaindiana/blob/dev/app/publish/github/1.gif" width="290px">
+    <img src="https://github.com/ValeryP/filaindiana/blob/dev/app/publish/github/1-1.png"  width="292px">
+    <img src="https://github.com/ValeryP/filaindiana/blob/dev/app/publish/github/1-2.png"  width="292px">
 </p>
 
 ### 2. Receive notifications for less crowded supermarket
 
 <p float="left">
-    <img src="https://github.com/ValeryP/filaindiana/blob/dev/app/publish/github/2.gif" width="294px">
-    <img src="https://github.com/ValeryP/filaindiana/blob/dev/app/publish/github/2-1.png"  width="296px">
-    <img src="https://github.com/ValeryP/filaindiana/blob/dev/app/publish/github/2-2.png"  width="296px">
+    <img src="https://github.com/ValeryP/filaindiana/blob/dev/app/publish/github/2.gif" width="290px">
+    <img src="https://github.com/ValeryP/filaindiana/blob/dev/app/publish/github/2-1.png"  width="292px">
+    <img src="https://github.com/ValeryP/filaindiana/blob/dev/app/publish/github/2-2.png"  width="292px">
 </p>
 
 ### 3. Report the supermarkets' queue length
 
 
 <p float="left">
-    <img src="https://github.com/ValeryP/filaindiana/blob/dev/app/publish/github/3.gif" width="294px">
-    <img src="https://github.com/ValeryP/filaindiana/blob/dev/app/publish/github/3-1.png" width="296px">
+    <img src="https://github.com/ValeryP/filaindiana/blob/dev/app/publish/github/3.gif" width="290px">
+    <img src="https://github.com/ValeryP/filaindiana/blob/dev/app/publish/github/3-1.png" width="292px">
 </p>
 
 ## 🚀 How to contribute
