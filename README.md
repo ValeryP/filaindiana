@@ -20,14 +20,19 @@ alt="Download from Google Play" height="80">](https://play.google.com/store/apps
 
 ### Show real-time waiting times at each supermarket
 
-<img src="https://github.com/ValeryP/coronavirus-spread/blob/master/public/img/1.gif" width="348px">
+<img src="https://github.com/ValeryP/filaindiana/blob/dev/app/publish/github/1.gif" width="348px">
+<img src="https://github.com/ValeryP/filaindiana/blob/dev/app/publish/github/1-1.gif">
+<img src="https://github.com/ValeryP/filaindiana/blob/dev/app/publish/github/1-2.gif">
 
 ### Receive notifications for less crowded supermarket
 
-<img src="https://github.com/ValeryP/coronavirus-spread/blob/master/public/img/1.gif" width="348px">
+<img src="https://github.com/ValeryP/filaindiana/blob/dev/app/publish/github/2.gif" width="348px">
+<img src="https://github.com/ValeryP/filaindiana/blob/dev/app/publish/github/2-1.gif">
+<img src="https://github.com/ValeryP/filaindiana/blob/dev/app/publish/github/2-2.gif">
 
 ### Report the supermarkets' queue length
 
-<img src="https://github.com/ValeryP/coronavirus-spread/blob/master/public/img/1.gif" width="348px">
+<img src="https://github.com/ValeryP/filaindiana/blob/dev/app/publish/github/3.gif" width="348px">
+<img src="https://github.com/ValeryP/filaindiana/blob/dev/app/publish/github/3-1.gif">
 
 ## 🚀 How to contribute
