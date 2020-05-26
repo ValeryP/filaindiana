@@ -238,3 +238,5 @@ fabric.properties
 
 keystore.properties
 **/signing.zip
+app/publish/com.codaliscia
+app/publish/com.filaindiana
