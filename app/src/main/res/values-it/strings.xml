@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="open_now">Aperti adesso</string>
+    <string name="show_favorite_supermarkets">Stai vedendo solo i supermercati Preferiti</string>
+    <string name="show_open_supermarkets">Stai vedendo solo per i supermercati aperti</string>
+    <string name="looking_for_location">Ricerca della posizione…</string>
+    <string name="closed">Chiuso</string>
+    <string name="report">Segnala</string>
+    <string name="min">min</string>
+    <string name="app_requires_location_permission">L\'app richiede l\'accesso alla tua posizione</string>
+    <string name="permission_required">Autorizzazione necessaria</string>
+    <string name="enable_gps">Attiva il GPS per trovare i supermercati più vicini</string>
+    <string name="enable">Attiva</string>
+    <string name="exit">Esci</string>
+    <string name="open_hours">Orario di apertura: %1$s</string>
+    <string name="last_reported">Ultima segnalazione: %1$s</string>
+    <string name="queue">%1$d pers / %2$d min</string>
+    <plurals name="n_people">
+        <item quantity="one">persone</item>
+        <item quantity="other">persone</item>
+    </plurals>
+    <string name="n_min">%1$s min</string>
+    <string name="queue_details">%1$s – fila inferiore a 15 min</string>
+    <string name="favorites">Preferiti</string>
+    <string name="unfavorite">Rimuovi da Preferiti</string>
+    <string name="add_to_favorites">Aggiungi a Preferiti</string>
+    <string name="subscribed_details">Ora riceverai una notifica (una fila inferiore a 15 min)</string>
+    <string name="removed">Rimosso</string>
+    <string name="no_updates">"Non riceverai più gli aggiornamenti per %1$s"</string>
+    <string name="requires_location_permission_details">L\'app richiede l\'accesso alla tua posizione per trovare i supermercati più vicini. Clicca su \"Attiva\" per aprire la schermata delle Impostazioni dell\'app e concedere l\'autorizzazione.</string>
+    <string name="time_to_shop">È ora di fare compere!</string>
+    <string name="unsibscribe_all">Rimuovi da Preferiti</string>
+    <string name="notification_channel_description">Notifica quando il supermercato ha una fila inferiore a 15 minuti</string>
+    <string name="only_open_supermarkets">Mostra solo i supermercati che sono attualmente aperti</string>
+    <string name="show_favorites">Mostra Preferiti</string>
+    <string name="only_favorites_supermarkets">Mostra solo i supermercati Preferiti ⭐️ per cui ricevi gli aggiornamenti</string>
+    <string name="im_in_the_queue_now">Sono in fila adesso</string>
+    <string name="send_report">Invia segnalazione</string>
+    <string name="how_many_people_are_there_in_the_queue">Quante persone sono in fila?</string>
+    <string name="how_long_do_you_think_the_queue_will_last">Quanti minuti pensi che la fila duri?</string>
+    <string name="report_sent">La tua segnalazione è stata inviata e verrà elaborata il prima possibile! ❤</string>
+    <string name="report_required">Non sappiamo quante persone sono in fila in questo momento</string>
+    <string name="added">Aggiunto %1$s</string>
+    <string name="no_shops">Siamo spiacenti, non abbiamo supermercati nella tua zona per ora</string>
+</resources>

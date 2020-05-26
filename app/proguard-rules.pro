@@ -14,8 +14,30 @@
 
 # Uncomment this to preserve the line number information for
 # debugging stack traces.
-#-keepattributes SourceFile,LineNumberTable
+-keepattributes SourceFile,LineNumberTable
 
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+# Crashlytics keep classes
+-keepattributes *Annotation*
+-keep public class * extends java.lang.Exception
+
+# Crashlytics exclude for faster builds
+-keep class com.google.firebase.crashlytics.** { *; }
+-dontwarn com.google.firebase.crashlytics.**
+
+# JodaTime: https://github.com/dlew/joda-time-android/issues/206#issuecomment-576666450
+-keep class net.danlew.android.joda.R$raw { *; }
+
+# Gson annotations: https://stackoverflow.com/a/57904190/1012234
+-keepclassmembers,allowobfuscation class * {
+    @com.google.gson.annotations.SerializedName <fields>;
+  }
+-keep,allowobfuscation @interface com.google.gson.annotations.SerializedName
+
+# Spotlight (onboarding) lib
+-keep class com.wooplr.spotlight.** { *; }
+-keep interface com.wooplr.spotlight.*
+-keep enum com.wooplr.spotlight.**
