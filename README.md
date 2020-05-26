@@ -10,7 +10,7 @@ purchases of essential goods.
     - 1. [Show real-time waiting times at each supermarket](#1-show-real-time-waiting-times-at-each-supermarket)
     - 2. [Receive notifications for less crowded supermarket](#2-receive-notifications-for-less-crowded-supermarket)
     - 3. [Report the supermarkets' queue length](#3-report-the-supermarkets-queue-length)
-- 🚀 [How to contribute](#-how-to-contribute)
+- 🚀 [Join testing](#-join-testing)
 - 🌐 Website: [filaindiana.it](https://filaindiana.it/)
 - ✉️ Feedback: [Telegram](https://t.me/p_val)
 
@@ -43,4 +43,14 @@ alt="Download from Google Play" height="80">](https://play.google.com/store/apps
     <img src="https://github.com/ValeryP/filaindiana/blob/dev/app/publish/github/3-1.png" width="292px">
 </p>
 
-## 🚀 How to contribute
+## 🚀 Join testing
+
+Help in testing is greatly appreciated. You can receive the new features before being released and give us your feedback. 
+
+Please, try out our Play Store beta channels:
+
+1. Download [FilaIndiana](https://play.google.com/store/apps/details?id=com.codaliscia) app from Play Store.
+2. Go to FilaIndiana tab in Play Store and scroll down to the end of the view.
+3. Press the "I'M IN" button to join the beta program and your final app will be replaced with the beta one.
+
+> If you want to use the FilaIndiana production version you have to leave the beta program, uninstall the app, and reinstall the production version.
