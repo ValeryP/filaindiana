@@ -103,6 +103,7 @@ object GraphicsProvider {
             "superc" -> R.drawable.superc
             "tigros" -> R.drawable.tigros
             "unes" -> R.drawable.unes
+            "poste" -> R.drawable.poste
             else -> R.drawable.generic
         }
     }
